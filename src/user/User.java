@@ -28,9 +28,6 @@ public class User {
         MessageConsumer receiver = null;
         BufferedReader waiter = null;
 
-
-
-
         try {
             // create the JNDI initial context.
             context = new InitialContext();
