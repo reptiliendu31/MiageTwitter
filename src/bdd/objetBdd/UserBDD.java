@@ -1,18 +1,24 @@
 package bdd.objetBdd;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Created by Stéfan on 08/11/2015.
  */
-public class User implements Serializable {
+public class UserBDD implements Serializable {
     private String login,password,name,firstName;
+    private ArrayList<MessageBDD> messages;
+    private ArrayList<UserBDD> abonnements;
+    private int id;
 
-    public User(String login, String password, String name, String firstName) {
+    public UserBDD(String login, String password, String name, String firstName) {
         this.login = login;
         this.password = password;
         this.name = name;
         this.firstName = firstName;
+        this.abonnements = new ArrayList<UserBDD>();
+        this.messages = new ArrayList<MessageBDD>();
     }
 
     public String getLogin() {
@@ -21,12 +27,26 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return "User{" +
+        String s = "UserBDD{" +
                 "login='" + login + '\'' +
                 ", password='" + password + '\'' +
                 ", name='" + name + '\'' +
                 ", firstName='" + firstName + '\'' +
                 '}';
+
+        for (MessageBDD msg : messages) {
+            s+= "\n message - " + msg.toString();
+        }
+
+        return s;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void setLogin(String login) {
@@ -55,5 +75,13 @@ public class User implements Serializable {
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
+    }
+
+    public boolean putMessage(MessageBDD m){
+        return messages.add(m);
+    }
+
+    public boolean putSub(UserBDD s){
+        return abonnements.add(s);
     }
 }
