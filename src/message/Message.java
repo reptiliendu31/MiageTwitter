@@ -3,14 +3,14 @@ package message;
 /**
  * Created by Yoan on 07/11/2015.
  */
-import user.User;
+import user.UserConnection;
 
 import java.sql.Date;
 import java.util.ArrayList;
 
 public class Message{
     private String content;
-    private User user;
+    private UserConnection user;
     private Date date;
 
     public String getContent() {
@@ -21,11 +21,11 @@ public class Message{
         this.content = content;
     }
 
-    public User getUser() {
+    public UserConnection getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(UserConnection user) {
         this.user = user;
     }
 
@@ -37,7 +37,7 @@ public class Message{
         this.date = date;
     }
 
-    public Message(String c, User u, Date d){
+    public Message(String c, UserConnection u, Date d){
         content=c;
         user=u;
         date=d;
