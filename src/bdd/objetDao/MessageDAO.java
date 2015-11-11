@@ -17,7 +17,22 @@ import java.util.ArrayList;
 public class MessageDAO extends DAO<MessageBDD>{
     @Override
     public ArrayList<MessageBDD> getInstances() {
-        return null;
+        ArrayList<MessageBDD> msg = new ArrayList<MessageBDD>();
+        try {
+
+            // récupération de la station
+            ResultSet result = this.connect.createStatement(
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE).executeQuery(
+                    "SELECT * FROM message");
+            while (result.next()) {
+                MessageBDD s = this.find(result.getInt(1));
+                msg.add(s);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return msg;
     }
 
     @Override
@@ -35,9 +50,9 @@ public class MessageDAO extends DAO<MessageBDD>{
                 mssBDD = new MessageBDD(
                         result.getString("content"),
                         result.getInt("iduser"),
-                        result.getDate("datepublication")
+                        result.getTimestamp("datepublication")
                 );
-
+                mssBDD.setIdMessage(result.getInt("idmessage"));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -50,11 +65,12 @@ public class MessageDAO extends DAO<MessageBDD>{
             // insertion de l'objet
             PreparedStatement prepare =
                     this.connect.prepareStatement(
-                            "INSERT INTO message (content, iduser) VALUES (?, ?)",
+                            "INSERT INTO message (content, iduser,datepublication) VALUES (?, ?, ?)",
                             Statement.RETURN_GENERATED_KEYS
                     );
             prepare.setString(1, obj.getContent());
             prepare.setInt(2, obj.getIdUser());
+            prepare.setTimestamp(3,obj.getDate());
             prepare.executeUpdate();
             // récupération des valeurs de l'insert
             ResultSet rs = prepare.getGeneratedKeys();

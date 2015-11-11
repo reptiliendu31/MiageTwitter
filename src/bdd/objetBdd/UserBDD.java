@@ -28,7 +28,8 @@ public class UserBDD implements Serializable {
     @Override
     public String toString() {
         String s = "UserBDD{" +
-                "login='" + login + '\'' +
+                "id = '" + id + '\'' +
+                ", login='" + login + '\'' +
                 ", password='" + password + '\'' +
                 ", name='" + name + '\'' +
                 ", firstName='" + firstName + '\'' +
@@ -36,6 +37,9 @@ public class UserBDD implements Serializable {
 
         for (MessageBDD msg : messages) {
             s+= "\n message - " + msg.toString();
+        }
+        for (UserBDD usr : abonnements) {
+            s+= "\n user - " + usr.getLogin();
         }
 
         return s;

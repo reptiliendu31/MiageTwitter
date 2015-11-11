@@ -3,6 +3,7 @@ package bdd.objetBdd;
 import user.UserConnection;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 /**
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 public class MessageBDD {
     private String content;
     private int idUser, idMessage;
-    private Date date;
+    private Timestamp date;
 
     public int getIdUser() {
         return idUser;
@@ -37,19 +38,18 @@ public class MessageBDD {
         this.content = content;
     }
 
-    public Date getDate() {
+    public Timestamp getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(Timestamp date) {
         this.date = date;
     }
 
-    public MessageBDD(String c, int u, Date d){
+    public MessageBDD(String c, int u, Timestamp d){
         content=c;
         idUser=u;
         date=d;
-
     }
 
     public static ArrayList<MessageBDD> testM(){

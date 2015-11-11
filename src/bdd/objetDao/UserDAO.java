@@ -50,7 +50,7 @@ public class UserDAO extends DAO<UserBDD> {
                         result.getString("name"),
                         result.getString("firstName")
                 );
-
+                userBDD.setId(result.getInt("iduser"));
                 // récupération des messages liés à un user
                 ResultSet resultMessage = this.connect.createStatement(
                         ResultSet.TYPE_SCROLL_INSENSITIVE,
@@ -66,7 +66,7 @@ public class UserDAO extends DAO<UserBDD> {
                         userBDD.putMessage(daoMessage.find(resultMessage.getInt(1)));
                     }
                 }
-/*
+
                 // récupération des abonnés liés à un user
                 ResultSet resultAbonne = this.connect.createStatement(
                         ResultSet.TYPE_SCROLL_INSENSITIVE,
@@ -77,17 +77,73 @@ public class UserDAO extends DAO<UserBDD> {
                 if (resultAbonne.first()) {
                     //
                     DAO<UserBDD> daoUser = new UserDAO();
-                    userBDD.putSub(daoUser.find(resultMessage.getInt(1)));
-                    while (resultMessage.next()) {
-                        userBDD.putSub(daoUser.find(resultMessage.getInt(1)));
+                    userBDD.putSub(daoUser.find(resultAbonne.getInt(2)));
+                    while (resultAbonne.next()) {
+                        userBDD.putSub(daoUser.find(resultAbonne.getInt(2)));
                     }
-                }*/
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return userBDD;
+    }
 
+    public UserBDD findbyLogin(String log) {
+        UserBDD userBDD = null;
+        try {
+            ResultSet result = this .connect
+                    .createStatement(
+                            ResultSet.TYPE_SCROLL_INSENSITIVE,
+                            ResultSet.CONCUR_UPDATABLE
+                    ).executeQuery(
+                            "SELECT * FROM UserTwitter WHERE login = '" + log +"'"
+                    );
+            if(result.first()) {
+                userBDD = new UserBDD(
+                        result.getString("login"),
+                        result.getString("password"),
+                        result.getString("name"),
+                        result.getString("firstName")
+                );
+                int id = result.getInt("iduser");
+                userBDD.setId(id);
+                // récupération des messages liés à un user
+                ResultSet resultMessage = this.connect.createStatement(
+                        ResultSet.TYPE_SCROLL_INSENSITIVE,
+                        ResultSet.CONCUR_UPDATABLE).executeQuery(
+                        "SELECT * FROM message WHERE iduser = " + id
+                );
+
+                if (resultMessage.first()) {
+                    // ajout de chaque vélo dans la station
+                    DAO<MessageBDD> daoMessage = new MessageDAO();
+                    userBDD.putMessage(daoMessage.find(resultMessage.getInt(1)));
+                    while (resultMessage.next()) {
+                        userBDD.putMessage(daoMessage.find(resultMessage.getInt(1)));
+                    }
+                }
+
+                // récupération des abonnés liés à un user
+                ResultSet resultAbonne = this.connect.createStatement(
+                        ResultSet.TYPE_SCROLL_INSENSITIVE,
+                        ResultSet.CONCUR_UPDATABLE).executeQuery(
+                        "SELECT * FROM subscription WHERE iduser = " + id
+                );
+
+                if (resultAbonne.first()) {
+                    //
+                    DAO<UserBDD> daoUser = new UserDAO();
+                    userBDD.putSub(daoUser.find(resultAbonne.getInt(2)));
+                    while (resultAbonne.next()) {
+                        userBDD.putSub(daoUser.find(resultAbonne.getInt(2)));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return userBDD;
     }
 
     @Override
@@ -107,7 +163,7 @@ public class UserDAO extends DAO<UserBDD> {
             // récupération des valeurs de l'insert
             ResultSet rs = prepare.getGeneratedKeys();
             rs.next();
-            //return find(rs.getInt(5));
+            return find(rs.getInt(1));
         }
         catch (SQLException e) {
             e.printStackTrace();
@@ -141,7 +197,7 @@ public class UserDAO extends DAO<UserBDD> {
     }
 
     // faire une méthode addAbonne / removeAbonne / sendMessage
-    public UserBDD addSub(UserBDD sub, UserBDD user, Date datesub) {
+    public UserBDD addSub(UserBDD sub, UserBDD user, Timestamp datesub) {
         try {
             // maj table posseder
             PreparedStatement prepare =
@@ -150,8 +206,8 @@ public class UserDAO extends DAO<UserBDD> {
                             Statement.RETURN_GENERATED_KEYS
                     );
             prepare.setInt(1, sub.getId());
-            prepare.setInt(2, sub.getId());
-            prepare.setDate(3, datesub);
+            prepare.setInt(2, user.getId());
+            prepare.setTimestamp(3, datesub);
             prepare.executeUpdate();
 
             sub = this.find(sub.getId());
@@ -159,7 +215,7 @@ public class UserDAO extends DAO<UserBDD> {
             e.printStackTrace();
         }
 
-        return sub;
+        return user;
     }
 
     public UserBDD removeSub(UserBDD user, UserBDD sub) {
@@ -175,6 +231,6 @@ public class UserDAO extends DAO<UserBDD> {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return null;
+        return user;
     }
 }
