@@ -1,8 +1,5 @@
 package bdd.objetBdd;
 
-import user.UserConnection;
-
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
@@ -11,16 +8,11 @@ import java.util.ArrayList;
  */
 public class MessageBDD {
     private String content;
-    private int idUser, idMessage;
+    private int idMessage;
+    private UserBDD user;
     private Timestamp date;
 
-    public int getIdUser() {
-        return idUser;
-    }
-
-    public void setIdUser(int idUser) {
-        this.idUser = idUser;
-    }
+    public UserBDD getUser() { return user;};
 
     public int getIdMessage() {
         return idMessage;
@@ -46,18 +38,16 @@ public class MessageBDD {
         this.date = date;
     }
 
-    public MessageBDD(String c, int u, Timestamp d){
+    public MessageBDD(String c, UserBDD u, Timestamp d){
         content=c;
-        idUser=u;
+        user=u;
         date=d;
     }
 
     public static ArrayList<MessageBDD> testM(){
         ArrayList<MessageBDD> l=new ArrayList<MessageBDD>();
 
-        l.add(new MessageBDD("LOL1",1,null));
-        l.add(new MessageBDD("LOL2",1,null));
-        l.add(new MessageBDD("LOL3",1,null));
+        l.add(new MessageBDD("LOL1",null,null));
 
         return l;
     }
@@ -66,7 +56,7 @@ public class MessageBDD {
     public String toString() {
         return "MessageBDD{" +
                 "content='" + content + '\'' +
-                ", idUser=" + idUser +
+                ", idUser=" + user.getId() +
                 ", idMessage=" + idMessage +
                 ", date=" + date +
                 '}';

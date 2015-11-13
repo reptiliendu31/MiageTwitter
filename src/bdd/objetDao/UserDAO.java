@@ -3,7 +3,6 @@ package bdd.objetDao;
 import bdd.DAO;
 import bdd.objetBdd.MessageBDD;
 import bdd.objetBdd.UserBDD;
-import user.User;
 
 import java.sql.*;
 import java.util.ArrayList;

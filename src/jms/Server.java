@@ -8,13 +8,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import javax.jms.*;
-import message.Message;
-import message.MsgListener;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import java.util.ArrayList;
+import bdd.objetBdd.MessageBDD;
+import message.MsgListener;
 
 /**
  * Created by david on 06/11/2015.
@@ -55,8 +51,8 @@ public class Server {
             // start the connection, to enable message sends
             connection.start();
 
-            ArrayList<Message> l = Message.testM();
-            for (Message m : l) {
+            ArrayList<MessageBDD> l = MessageBDD.testM();
+            for (MessageBDD m : l) {
                 TextMessage message = session.createTextMessage();
                 message.setText(m.getContent());
                 sender.send(message);

@@ -3,6 +3,7 @@ package user;
 /**
  * Created by Yoan on 07/11/2015.
  */
+import bdd.objetBdd.MessageBDD;
 import message.*;
 
 import javax.jms.*;
@@ -126,8 +127,8 @@ public class UserConnection {
             // start the connection, to enable message sends
             connection.start();
 
-            ArrayList<message.Message> l = message.Message.testM();
-            for (message.Message m : l) {
+            ArrayList<MessageBDD> l = MessageBDD.testM();
+            for (MessageBDD m : l) {
                 TextMessage message = session.createTextMessage();
                 message.setText(m.getContent());
                 sender.send(message);
