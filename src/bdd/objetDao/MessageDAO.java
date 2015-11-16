@@ -51,7 +51,8 @@ public class MessageDAO extends DAO<MessageBDD>{
                 mssBDD = new MessageBDD(
                         result.getString("content"),
                         userDAO.find(result.getInt("iduser")),
-                        result.getTimestamp("datepublication")
+                        result.getTimestamp("datepublication"),
+                        result.getString("localization")
                 );
                 mssBDD.setIdMessage(result.getInt("idmessage"));
             }
@@ -68,12 +69,13 @@ public class MessageDAO extends DAO<MessageBDD>{
             // insertion de l'objet
             PreparedStatement prepare =
                     this.connect.prepareStatement(
-                            "INSERT INTO message (content, iduser,datepublication) VALUES (?, ?, ?)",
+                            "INSERT INTO message (content, iduser,datepublication,localisation) VALUES (?, ?, ?,?)",
                             Statement.RETURN_GENERATED_KEYS
                     );
             prepare.setString(1, obj.getContent());
             prepare.setInt(2, obj.getUser().getId());
             prepare.setTimestamp(3,obj.getDate());
+            prepare.setString(4,obj.getLocalization());
             prepare.executeUpdate();
             // récupération des valeurs de l'insert
             ResultSet rs = prepare.getGeneratedKeys();
@@ -95,7 +97,8 @@ public class MessageDAO extends DAO<MessageBDD>{
                             ResultSet.CONCUR_UPDATABLE
                     ).executeUpdate(
                     "UPDATE message SET content = '" + obj.getContent() + "',"+
-                            " iduser = '" + obj.getUser().getId() + "'" +
+                            " iduser = '" + obj.getUser().getId() + "'" + "',"+
+                            " localization = '" + obj.getLocalization() + "'" +
                             " WHERE idmessage = " + obj.getIdMessage()
             );
         } catch (SQLException e) {

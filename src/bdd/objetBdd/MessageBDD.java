@@ -7,7 +7,7 @@ import java.util.ArrayList;
  * Created by Stéfan on 09/11/2015.
  */
 public class MessageBDD {
-    private String content;
+    private String content,localization;
     private int idMessage;
     private UserBDD user;
     private Timestamp date;
@@ -42,6 +42,22 @@ public class MessageBDD {
         content=c;
         user=u;
         date=d;
+        localization = null;
+    }
+
+    public MessageBDD(String content,UserBDD user,  Timestamp date, String localization) {
+        this.content = content;
+        this.localization = localization;
+        this.user = user;
+        this.date = date;
+    }
+
+    public String getLocalization() {
+        return localization;
+    }
+
+    public void setLocalization(String localization) {
+        this.localization = localization;
     }
 
     public static ArrayList<MessageBDD> testM(){
