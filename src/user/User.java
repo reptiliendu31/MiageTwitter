@@ -4,6 +4,7 @@ package user;
  * Created by Yoan on 07/11/2015.
  */
 import bdd.objetBdd.MessageBDD;
+import bdd.objetBdd.UserBDD;
 
 import javax.jms.*;
 import javax.naming.Context;
@@ -32,14 +33,12 @@ public class User {
     private BufferedReader waiter = null;
     private TemporaryQueue tempo = null;
 
-
     public static void main(String[] args) {
         User u = new User();
     }
 
 
     public User() {
-
         try {
             // create the JNDI initial context.
             context = new InitialContext();
@@ -77,7 +76,7 @@ public class User {
             waiter.readLine();
 
             System.out.println("sending create temp request...");
-            createTempQueue("user1");
+            createTempQueue();
             System.out.println("Waiting for messages...");
             waiter = new BufferedReader(new InputStreamReader(System.in));
             waiter.readLine();
@@ -110,12 +109,12 @@ public class User {
         }
     }
 
-    public void createTempQueue(String name) {
+    public void createTempQueue() {
         try {
             tempo = session.createTemporaryQueue();
             MessageConsumer consumerTempo = session.createConsumer(tempo);
             consumerTempo.setMessageListener(new TemporaryQueueListener(this));
-            TextMessage req = session.createTextMessage("Connexion;"+name);
+            TextMessage req = session.createTextMessage("Connexion");
             req.setJMSReplyTo(tempo);
             senderTwitterQueue.send(req);
         } catch (JMSException e) {
