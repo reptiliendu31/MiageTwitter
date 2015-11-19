@@ -60,7 +60,7 @@ elif [ ! -r "$OPENJMS_HOME"/lib/openjms-0.7.7-beta-1.jar ]; then
   exit 1
 fi
 
-CLASSPATH="$OPENJMS_HOME"/lib/openjms-0.7.7-beta-1.jar:"$OPENJMS_HOME"/lib/jms-1.1.jar:"$OPENJMS_HOME"/lib/jndi-1.2.1.jar
+CLASSPATH="$OPENJMS_HOME"/lib/openjms-0.7.7-beta-1.jar:"$OPENJMS_HOME"/lib/server-1.1.jar:"$OPENJMS_HOME"/lib/jndi-1.2.1.jar
 
 # For Cygwin, switch paths to Windows format before running java
 if $cygwin; then

@@ -60,13 +60,22 @@ public class MessageBDD {
         this.localization = localization;
     }
 
-    public static ArrayList<MessageBDD> testM(){
+    public static ArrayList<MessageBDD> testServ(){
         ArrayList<MessageBDD> l=new ArrayList<MessageBDD>();
 
-        l.add(new MessageBDD("LOL1",null,null));
+        l.add(new MessageBDD("server",null,null));
 
         return l;
     }
+
+    public static ArrayList<MessageBDD> testUser(){
+        ArrayList<MessageBDD> l=new ArrayList<MessageBDD>();
+
+        l.add(new MessageBDD("user",null,null));
+
+        return l;
+    }
+
 
     @Override
     public String toString() {
