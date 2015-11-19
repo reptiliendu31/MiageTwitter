@@ -27,7 +27,8 @@ public class Server {
     private Session session ;
     private MessageProducer sender = null;
     private MessageConsumer receiver = null;
-    private HashMap<String, MessageProducer> tempQueues;
+    private HashMap<Integer, MessageProducer> tempQueues;
+    private static int nbTempQueues = 0;
 
     public static void main(String[] args) {
         Server s = new Server();
@@ -36,7 +37,7 @@ public class Server {
     public Server() {
 
         try {
-            tempQueues = new HashMap<String, MessageProducer>();
+            tempQueues = new HashMap<Integer, MessageProducer>();
 
             // create the JNDI initial context.
             context = new InitialContext();
@@ -108,13 +109,14 @@ public class Server {
         }
     }
 
-    public void initTemporaryQueue(Message req, String login) {
+    public void initTemporaryQueue(Message req) {
         try {
             Destination tempo = req.getJMSReplyTo();
             MessageProducer mp = null;
             mp = session.createProducer(tempo);
-            tempQueues.put(login,mp);
-            TextMessage rep = session.createTextMessage("ACK - Temp queue created for " +login);
+            tempQueues.put(nbTempQueues,mp);
+            TextMessage rep = session.createTextMessage("ACK - Temp queue created, number : " + nbTempQueues);
+            nbTempQueues++;
             mp.send(rep);
         } catch (JMSException e) {
             e.printStackTrace();

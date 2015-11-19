@@ -20,7 +20,7 @@
   </appender>
 
   
-  <category name="org.exolab.server.server.net" additivity="false">
+  <category name="org.exolab.jms.server.net" additivity="false">
     <!-- logs server connection details -->
     <priority value="INFO"/>
     <appender-ref ref="STDOUT"/>

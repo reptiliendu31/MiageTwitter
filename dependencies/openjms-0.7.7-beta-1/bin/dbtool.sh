@@ -97,6 +97,6 @@ echo "Using CLASSPATH:    $CLASSPATH"
 exec "$_RUNJAVA" $JAVA_OPTS -Dopenjms.home="$OPENJMS_HOME" \
     -classpath "$CLASSPATH" \
     -Djava.security.manager -Djava.security.policy="$POLICY_FILE" \
-    org.exolab.server.tools.db.DBTool "$@"
+    org.exolab.jms.tools.db.DBTool "$@"
 
 fi

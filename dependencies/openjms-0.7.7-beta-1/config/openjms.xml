@@ -24,7 +24,7 @@
     <RdbmsDatabaseConfiguration
       driver="org.apache.derby.jdbc.EmbeddedDriver"
       url="jdbc:derby:openjmsdb;create=true" 
-      userBDD="openjms"
+      user="openjms" 
       password="openjms"/>
   </DatabaseConfiguration>
 

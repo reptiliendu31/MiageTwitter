@@ -30,7 +30,7 @@ public class TwitterQueueListener implements MessageListener {
                         // init temporary queue with login name
                         System.out.println(" -temporary queue request");
                         System.out.println("   -> sending ack to user");
-                        server.initTemporaryQueue(message, text.getText().split(";")[1]);
+                        server.initTemporaryQueue(message);
                 }
 
             } catch (JMSException exception) {

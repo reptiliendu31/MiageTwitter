@@ -104,7 +104,7 @@ if [ "$1" = "run" ]; then
   exec "$_RUNJAVA" $JAVA_OPTS -Dopenjms.home="$OPENJMS_HOME" \
       -classpath "$CLASSPATH" \
       -Djava.security.manager -Djava.security.policy="$POLICY_FILE" \
-      org.exolab.server.server.JmsServer "$@"
+      org.exolab.jms.server.JmsServer "$@"
 
 elif [ "$1" = "start" ] ; then
 
@@ -112,7 +112,7 @@ elif [ "$1" = "start" ] ; then
   "$_RUNJAVA" $JAVA_OPTS -Dopenjms.home="$OPENJMS_HOME" \
       -classpath "$CLASSPATH" \
       -Djava.security.manager -Djava.security.policy="$POLICY_FILE" \
-      org.exolab.server.server.JmsServer "$@"
+      org.exolab.jms.server.JmsServer "$@"
 
 elif [ "$1" = "stop" ] ; then
 
@@ -120,7 +120,7 @@ elif [ "$1" = "stop" ] ; then
   exec "$_RUNJAVA" $JAVA_OPTS -Dopenjms.home="$OPENJMS_HOME" \
       -classpath "$CLASSPATH" \
       -Djava.security.manager -Djava.security.policy="$POLICY_FILE" \
-      org.exolab.server.tools.admin.AdminMgr "$@" -stopServer
+      org.exolab.jms.tools.admin.AdminMgr "$@" -stopServer
 
 elif [ "$1" = "admin" ] ; then
 
@@ -128,7 +128,7 @@ elif [ "$1" = "admin" ] ; then
   exec "$_RUNJAVA" $JAVA_OPTS -Dopenjms.home="$OPENJMS_HOME" \
       -classpath "$CLASSPATH" \
       -Djava.security.manager -Djava.security.policy="$POLICY_FILE" \
-      org.exolab.server.tools.admin.AdminMgr "$@"
+      org.exolab.jms.tools.admin.AdminMgr "$@"
 
 else
 
