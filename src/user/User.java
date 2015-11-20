@@ -5,6 +5,7 @@ package user;
  */
 import bdd.objetBdd.MessageBDD;
 import bdd.objetBdd.UserBDD;
+import bdd.objetDao.UserDAO;
 
 import javax.jms.*;
 import javax.naming.Context;
@@ -32,6 +33,7 @@ public class User {
     private MessageProducer senderTwitterQueue = null;
     private BufferedReader waiter = null;
     private TemporaryQueue tempo = null;
+    private UserBDD userCourant=null;
 
     public static void main(String[] args) {
         User u = new User();
@@ -138,6 +140,10 @@ public class User {
             switch (choix){
                 case "1":
                     inscription();
+                    break;
+                case "2":
+                    connexion();
+                    break;
                 default:
                     System.out.println("Mauvais choix");
             }
@@ -181,6 +187,48 @@ public class User {
 
         } catch (JMSException e) {
             e.printStackTrace();
+        }
+    }
+
+
+    public void connexion(){
+        try {
+            System.out.println("Enter login:");
+            waiter = new BufferedReader(new InputStreamReader(System.in));
+            String login = waiter.readLine();
+            System.out.println("Enter password:");
+            waiter = new BufferedReader(new InputStreamReader(System.in));
+            String pwd = waiter.readLine();
+
+           boolean co = connect(login, pwd);
+           if(co){
+               System.out.println("Connexion réussie !");
+           }else{
+               System.out.println("Connexion échouée !");
+
+           }
+
+
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean connect(String login, String pwd) {
+
+        UserDAO u = new UserDAO();
+        UserBDD user = u.findbyLogin(login);
+
+
+        if (user!=null){
+            if (user.getPassword().equals(pwd)){
+                userCourant=user;
+                return true;
+            }
+            return false;
+        }else{
+            return false;
         }
     }
 }
