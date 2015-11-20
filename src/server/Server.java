@@ -128,7 +128,26 @@ public class Server {
     public void signIn(UserBDD user){
         UserDAO usr = new UserDAO();
         user = usr.create(user);
-        System.out.println("user created");
+        if(user != null){
+            System.out.println("user created");
+            // envoi mess sur file tempo
+        }
+        else{
+            // envoi mess erreur
+        }
+    }
 
+    public void connection(String login, String password){
+        UserDAO usr = new UserDAO();
+        UserBDD user = usr.findbyLogin(login);
+        if(user != null){
+            System.out.println("User Found");
+            // envoi mess sur file tempo
+        }
+        else{
+            // envoi mess erreur
+            System.out.println("User not Found");
+
+        }
     }
 }

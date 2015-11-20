@@ -49,6 +49,20 @@ public class TwitterQueueListener implements MessageListener {
                 e.printStackTrace();
             }
         }
+        else if (message instanceof StreamMessage){
+            StreamMessage mess = (StreamMessage) message;
+            try {
+                if(message.getJMSType().equals("Connection")){
+
+                    String login = mess.readString();
+                    String password = mess.readString();
+                    server.connection(login,password);
+                    System.out.println("test connexion : login = " + login + " password : " + password);
+                }
+            } catch (JMSException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
 

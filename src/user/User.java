@@ -200,6 +200,15 @@ public class User {
             waiter = new BufferedReader(new InputStreamReader(System.in));
             String pwd = waiter.readLine();
 
+
+            StreamMessage req = session.createStreamMessage();
+            req.clearBody();
+            req.writeString(login);
+            req.writeString(pwd);
+            req.setJMSType("Connection");
+            senderTwitterQueue.send(req);
+            System.out.println("envoie de la demande de connexion");
+
            boolean co = connect(login, pwd);
            if(co){
                System.out.println("Connexion réussie !");
@@ -211,6 +220,9 @@ public class User {
 
         }
         catch (IOException e) {
+            e.printStackTrace();
+        }
+        catch (JMSException e) {
             e.printStackTrace();
         }
     }
@@ -230,5 +242,9 @@ public class User {
         }else{
             return false;
         }
+    }
+
+    public void setUserCourant(UserBDD user){
+        userCourant = user;
     }
 }

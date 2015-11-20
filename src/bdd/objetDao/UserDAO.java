@@ -50,6 +50,7 @@ public class UserDAO extends DAO<UserBDD> {
                         result.getString("firstName")
                 );
                 userBDD.setId(result.getInt("iduser"));
+                /*
                 // récupération des messages liés à un user
                 ResultSet resultMessage = this.connect.createStatement(
                         ResultSet.TYPE_SCROLL_INSENSITIVE,
@@ -80,7 +81,7 @@ public class UserDAO extends DAO<UserBDD> {
                     while (resultAbonne.next()) {
                         userBDD.putSub(daoUser.find(resultAbonne.getInt(2)));
                     }
-                }
+                }*/
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -106,6 +107,7 @@ public class UserDAO extends DAO<UserBDD> {
                         result.getString("firstName")
                 );
                 int id = result.getInt("iduser");
+                /*
                 userBDD.setId(id);
                 // récupération des messages liés à un user
                 ResultSet resultMessage = this.connect.createStatement(
@@ -137,7 +139,7 @@ public class UserDAO extends DAO<UserBDD> {
                     while (resultAbonne.next()) {
                         userBDD.putSub(daoUser.find(resultAbonne.getInt(2)));
                     }
-                }
+                }*/
             }
         } catch (SQLException e) {
             e.printStackTrace();
