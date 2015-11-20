@@ -11,6 +11,8 @@ import java.util.HashMap;
 import javax.jms.*;
 
 import bdd.objetBdd.MessageBDD;
+import bdd.objetBdd.UserBDD;
+import bdd.objetDao.UserDAO;
 
 /**
  * Created by david on 06/11/2015.
@@ -121,5 +123,12 @@ public class Server {
         } catch (JMSException e) {
             e.printStackTrace();
         }
+    }
+
+    public void signIn(UserBDD user){
+        UserDAO usr = new UserDAO();
+        user = usr.create(user);
+        System.out.println("user created");
+
     }
 }

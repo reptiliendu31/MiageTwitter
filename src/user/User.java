@@ -152,7 +152,7 @@ public class User {
         System.out.println("Choose login:");
         waiter = new BufferedReader(new InputStreamReader(System.in));
         String login = waiter.readLine();
-        System.out.println("Choose password for login :" + login);
+        System.out.println("Choose password:");
         waiter = new BufferedReader(new InputStreamReader(System.in));
         String pswd = waiter.readLine();
         System.out.println("Choose name:");
@@ -161,8 +161,25 @@ public class User {
         System.out.println("Choose first name:");
         waiter = new BufferedReader(new InputStreamReader(System.in));
         String firstName = waiter.readLine();
+        InscriptionMessage(login,pswd,name,firstName);
+            System.out.println("Inscription envoyée");
+
         }
         catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void InscriptionMessage(String login, String pswd, String name, String fName) {
+        try {
+            UserBDD user = new UserBDD(login,pswd,name,fName);
+            ObjectMessage req = session.createObjectMessage(user);
+            req.setJMSType("SignIn");
+            req.setJMSReplyTo(tempo);
+            senderTwitterQueue.send(req);
+            System.out.println("envoie de la demande d'inscription");
+
+        } catch (JMSException e) {
             e.printStackTrace();
         }
     }

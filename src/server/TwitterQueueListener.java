@@ -4,10 +4,9 @@ package server;
  * Created by Yoan on 07/11/2015.
  */
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.TextMessage;
+import bdd.objetBdd.UserBDD;
+
+import javax.jms.*;
 
 /**
  * Created by david on 06/11/2015.
@@ -35,6 +34,19 @@ public class TwitterQueueListener implements MessageListener {
 
             } catch (JMSException exception) {
                 System.err.println("Failed to get message text: " + exception);
+            }
+        }
+        else if (message instanceof ObjectMessage){
+            ObjectMessage mess = (ObjectMessage) message;
+            try {
+                if(message.getJMSType().equals("SignIn")){
+                    UserBDD user = (UserBDD) mess.getObject();
+                    System.out.println("user test : " + user.getLogin());
+                    server.signIn(user);
+                    System.out.println(user.toString());
+                }
+            } catch (JMSException e) {
+                e.printStackTrace();
             }
         }
     }
