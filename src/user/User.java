@@ -77,9 +77,12 @@ public class User {
 
             System.out.println("sending create temp request...");
             createTempQueue();
-            System.out.println("Waiting for messages...");
-            waiter = new BufferedReader(new InputStreamReader(System.in));
-            waiter.readLine();
+            while (true){
+                menuUser();
+            }
+            //System.out.println("Waiting for messages...");
+            //waiter = new BufferedReader(new InputStreamReader(System.in));
+            //waiter.readLine();
 
 
         } catch (IOException exception) {
@@ -122,4 +125,45 @@ public class User {
         }
     }
 
+    public void menuUser(){
+        System.out.println("Menu :");
+        System.out.println("1 - Inscription");
+        System.out.println("2 - Connexion");
+        System.out.println("3 - Recherche");
+        System.out.println("4 - Envoi message");
+        waiter = new BufferedReader(new InputStreamReader(System.in));
+        try {
+            String choix = waiter.readLine();
+
+            switch (choix){
+                case "1":
+                    inscription();
+                default:
+                    System.out.println("Mauvais choix");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void inscription() {
+        try {
+        System.out.println("Choose login:");
+        waiter = new BufferedReader(new InputStreamReader(System.in));
+        String login = waiter.readLine();
+        System.out.println("Choose password for login :" + login);
+        waiter = new BufferedReader(new InputStreamReader(System.in));
+        String pswd = waiter.readLine();
+        System.out.println("Choose name:");
+        waiter = new BufferedReader(new InputStreamReader(System.in));
+        String name = waiter.readLine();
+        System.out.println("Choose first name:");
+        waiter = new BufferedReader(new InputStreamReader(System.in));
+        String firstName = waiter.readLine();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
