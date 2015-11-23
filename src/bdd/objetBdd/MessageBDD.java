@@ -9,10 +9,10 @@ import java.util.ArrayList;
 public class MessageBDD {
     private String content,localization;
     private int idMessage;
-    private UserBDD user;
+    private int user;
     private Timestamp date;
 
-    public UserBDD getUser() { return user;};
+    public int getIdUser() { return user;};
 
     public int getIdMessage() {
         return idMessage;
@@ -38,14 +38,7 @@ public class MessageBDD {
         this.date = date;
     }
 
-    public MessageBDD(String c, UserBDD u, Timestamp d){
-        content=c;
-        user=u;
-        date=d;
-        localization = null;
-    }
-
-    public MessageBDD(String content,UserBDD user,  Timestamp date, String localization) {
+    public MessageBDD(String content,int user,  Timestamp date, String localization) {
         this.content = content;
         this.localization = localization;
         this.user = user;
@@ -63,7 +56,7 @@ public class MessageBDD {
     public static ArrayList<MessageBDD> testServ(){
         ArrayList<MessageBDD> l=new ArrayList<MessageBDD>();
 
-        l.add(new MessageBDD("server",null,null));
+        l.add(new MessageBDD("server",1,new Timestamp(1),"toulouse"));
 
         return l;
     }
@@ -71,7 +64,7 @@ public class MessageBDD {
     public static ArrayList<MessageBDD> testUser(){
         ArrayList<MessageBDD> l=new ArrayList<MessageBDD>();
 
-        l.add(new MessageBDD("user",null,null));
+        l.add(new MessageBDD("user",1,new Timestamp(1),"toulouse"));
 
         return l;
     }
@@ -81,7 +74,7 @@ public class MessageBDD {
     public String toString() {
         return "MessageBDD{" +
                 "content='" + content + '\'' +
-                ", idUser=" + user.getId() +
+                ", idUser=" + user +
                 ", idMessage=" + idMessage +
                 ", date=" + date +
                 '}';
