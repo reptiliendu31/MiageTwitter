@@ -97,7 +97,7 @@ public class Browser {
             // look up the Queue
             queue = (Queue) context.lookup(queueName);
 
-            // create the connection
+            // create the respConnection
             connection = factory.createConnection();
 
             // create the session
@@ -106,7 +106,7 @@ public class Browser {
             // create the browser
             browser = session.createBrowser(queue);
 
-            // start the connection
+            // start the respConnection
             connection.start();
 
             Enumeration messages = browser.getEnumeration();
@@ -133,7 +133,7 @@ public class Browser {
                 }
             }
 
-            // close the connection
+            // close the respConnection
             if (connection != null) {
                 try {
                     connection.close();

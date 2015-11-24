@@ -21,7 +21,7 @@
 
   
   <category name="org.exolab.jms.server.net" additivity="false">
-    <!-- logs server connection details -->
+    <!-- logs server respConnection details -->
     <priority value="INFO"/>
     <appender-ref ref="STDOUT"/>
     <appender-ref ref="openjms"/>

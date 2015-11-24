@@ -102,7 +102,7 @@ public class DurableSubscriber {
             // look up the topic
             topic = (Topic) context.lookup(topicName);
 
-            // create the connection
+            // create the respConnection
             connection = factory.createConnection();
 
             // create the session
@@ -113,7 +113,7 @@ public class DurableSubscriber {
             subscriber = session.createDurableSubscriber(
                 topic, subscriptionName);
 
-            // start the connection, to enable message receipt
+            // start the respConnection, to enable message receipt
             connection.start();
 
             for (int i = 0; i < count; ++i) {
@@ -139,7 +139,7 @@ public class DurableSubscriber {
                 }
             }
 
-            // close the connection
+            // close the respConnection
             if (connection != null) {
                 try {
                     connection.close();

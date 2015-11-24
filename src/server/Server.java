@@ -51,7 +51,7 @@ public class Server {
             destMessages = (Destination) context.lookup(topicMessages);
             destTwitter = (Destination) context.lookup(twitterQueue);
 
-            // create the connection
+            // create the respConnection
             connection = factory.createConnection();
 
             // create the session
@@ -66,7 +66,7 @@ public class Server {
             // register a listener
             receiver.setMessageListener(new TwitterQueueListener(this));
 
-            // start the connection, to enable message sends
+            // start the respConnection, to enable message sends
             connection.start();
             System.out.println("Waiting for messages...");
             BufferedReader waiter = new BufferedReader(new InputStreamReader(System.in));
@@ -100,7 +100,7 @@ public class Server {
                 }
             }
 
-            // close the connection
+            // close the respConnection
             if (connection != null) {
                 try {
                     connection.close();
@@ -111,7 +111,7 @@ public class Server {
         }
     }
 
-    public void initTemporaryQueue(Message req) {
+    public void respInitTempQueue(Message req) {
         try {
             // getting temp queue destination
             Destination tempo = req.getJMSReplyTo();
@@ -144,9 +144,9 @@ public class Server {
         }
     }
 
-    // connection method
+    // respConnection method
     // checks if user exists, and sends result to client
-    public void connection(int idClient, String login, String password){
+    public void respConnection(int idClient, String login, String password){
         try {
             UserDAO usr = new UserDAO();
             UserBDD user = usr.findbyLogin(login);
@@ -166,4 +166,7 @@ public class Server {
             e.printStackTrace();
         }
     }
+
+    // réception msg
+
 }

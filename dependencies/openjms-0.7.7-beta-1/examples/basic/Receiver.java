@@ -100,7 +100,7 @@ public class Receiver {
             // look up the Destination
             dest = (Destination) context.lookup(destName);
 
-            // create the connection
+            // create the respConnection
             connection = factory.createConnection();
 
             // create the session
@@ -110,7 +110,7 @@ public class Receiver {
             // create the receiver
             receiver = session.createConsumer(dest);
 
-            // start the connection, to enable message receipt
+            // start the respConnection, to enable message receipt
             connection.start();
 
             for (int i = 0; i < count; ++i) {
@@ -136,7 +136,7 @@ public class Receiver {
                 }
             }
 
-            // close the connection
+            // close the respConnection
             if (connection != null) {
                 try {
                     connection.close();

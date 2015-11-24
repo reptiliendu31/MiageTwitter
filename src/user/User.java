@@ -3,9 +3,7 @@ package user;
 /**
  * Created by Yoan on 07/11/2015.
  */
-import bdd.objetBdd.MessageBDD;
 import bdd.objetBdd.UserBDD;
-import bdd.objetDao.UserDAO;
 
 import javax.jms.*;
 import javax.naming.Context;
@@ -14,7 +12,6 @@ import javax.naming.NamingException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 
 /**
  * Created by david on 06/11/2015.
@@ -55,7 +52,7 @@ public class User {
             destMessages = (Destination) context.lookup(topicMessages);
             destTwitter = (Destination) context.lookup(twitterQueue);
 
-            // create the connection
+            // create the respConnection
             connection = factory.createConnection();
 
             // create the session
@@ -71,7 +68,7 @@ public class User {
             // register a listener
             receiverMessagesTopic.setMessageListener(new MessagesTopicListener(this));
 
-            // start the connection, to enable message receipt
+            // start the respConnection, to enable message receipt
             connection.start();
 
             System.out.println("Waiting for messages...");
@@ -81,7 +78,7 @@ public class User {
             waiter.readLine();
 
             System.out.println("sending create temp request...");
-            createTempQueue();
+            sendMsgCreateTempQueue();
             while (true){
                 menuUser();
             }
@@ -106,7 +103,7 @@ public class User {
                 }
             }
 
-            // close the connection
+            // close the respConnection
             if (connection != null) {
                 try {
                     connection.close();
@@ -117,21 +114,6 @@ public class User {
         }
     }
 
-    public void createTempQueue() {
-        try {
-            tempo = session.createTemporaryQueue();
-            MessageConsumer consumerTempo = session.createConsumer(tempo);
-            consumerTempo.setMessageListener(new TemporaryQueueListener(this));
-            StreamMessage req = session.createStreamMessage();
-            req.clearBody();
-            req.setJMSType("InitTempQueue");
-
-            req.setJMSReplyTo(tempo);
-            senderTwitterQueue.send(req);
-        } catch (JMSException e) {
-            e.printStackTrace();
-        }
-    }
 
     public void menuUser(){
         System.out.println("Menu :");
@@ -148,7 +130,7 @@ public class User {
                     inscription();
                     break;
                 case "2":
-                    connexion();
+                    sendMsgConnexion();
                     break;
                 default:
                     System.out.println("Mauvais choix");
@@ -197,7 +179,8 @@ public class User {
     }
 
 
-    public void connexion(){
+    // send connexion demand
+    public void sendMsgConnexion(){
         try {
             System.out.println("Enter login:");
             waiter = new BufferedReader(new InputStreamReader(System.in));
@@ -215,7 +198,7 @@ public class User {
             req.writeString(pwd);
             req.setJMSType("Connection");
             senderTwitterQueue.send(req);
-            System.out.println("envoi de la demande de connexion");
+            System.out.println("envoi de la demande de sendMsgConnexion");
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -225,10 +208,31 @@ public class User {
         }
     }
 
+    // première connexion au serveur : demande de file temp pour communiquer
+    public void sendMsgCreateTempQueue() {
+        try {
+            tempo = session.createTemporaryQueue();
+            MessageConsumer consumerTempo = session.createConsumer(tempo);
+            consumerTempo.setMessageListener(new TemporaryQueueListener(this));
+            StreamMessage req = session.createStreamMessage();
+            req.clearBody();
+            req.setJMSType("InitTempQueue");
 
-    public void setServerID(int id) {
+            req.setJMSReplyTo(tempo);
+            senderTwitterQueue.send(req);
+        } catch (JMSException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    // réception
+
+    // response from temp queue init
+    public void respMsgTempQueue(int id) {
         serverID = id;
     }
+
 
 
     public void setUserCourant(UserBDD user){

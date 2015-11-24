@@ -26,8 +26,7 @@ public class TemporaryQueueListener implements MessageListener {
                 switch (message.getJMSType()) {
                     case "RespInitTempQueue" :
                         int serverId = mess.readInt();
-                        System.out.println("Received temp queue ACK -> " + serverId);
-                        user.setServerID(serverId);
+                        user.respMsgTempQueue(serverId);
                         break;
                     case "RespConnection" :
                         boolean result = mess.readBoolean();

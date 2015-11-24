@@ -20,8 +20,8 @@ public class ConnectionBDD {
     private static Connection connect;
 
     /**
-     * Returns database connection instance (and creates it if it doesn't exist)
-     * 	 * @return Database connection link
+     * Returns database respConnection instance (and creates it if it doesn't exist)
+     * 	 * @return Database respConnection link
      */
     public static Connection getInstance(){
         if(connect == null){

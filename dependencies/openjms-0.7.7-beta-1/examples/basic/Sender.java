@@ -101,7 +101,7 @@ public class Sender {
             // look up the Destination
             dest = (Destination) context.lookup(destName);
 
-            // create the connection
+            // create the respConnection
             connection = factory.createConnection();
 
             // create the session
@@ -111,7 +111,7 @@ public class Sender {
             // create the sender
             sender = session.createProducer(dest);
 
-            // start the connection, to enable message sends
+            // start the respConnection, to enable message sends
             connection.start();
 
             for (int i = 0; i < count; ++i) {
@@ -134,7 +134,7 @@ public class Sender {
                 }
             }
 
-            // close the connection
+            // close the respConnection
             if (connection != null) {
                 try {
                     connection.close();

@@ -99,7 +99,7 @@ public class Listener {
             // look up the Desination
             dest = (Destination) context.lookup(destName);
 
-            // create the connection
+            // create the respConnection
             connection = factory.createConnection();
 
             // create the session
@@ -112,7 +112,7 @@ public class Listener {
             // register a listener
             receiver.setMessageListener(new SampleListener());
 
-            // start the connection, to enable message receipt
+            // start the respConnection, to enable message receipt
             connection.start();
 
             System.out.println("Waiting for messages...");
@@ -136,7 +136,7 @@ public class Listener {
                 }
             }
 
-            // close the connection
+            // close the respConnection
             if (connection != null) {
                 try {
                     connection.close();
