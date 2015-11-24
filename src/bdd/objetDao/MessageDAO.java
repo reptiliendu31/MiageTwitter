@@ -47,10 +47,9 @@ public class MessageDAO extends DAO<MessageBDD>{
                             "SELECT * FROM message WHERE idmessage = " + id
                     );
             if(result.first()) {
-                UserDAO userDAO = new UserDAO();
                 mssBDD = new MessageBDD(
                         result.getString("content"),
-                        userDAO.find(result.getInt("iduser")),
+                        result.getInt("iduser"),
                         result.getTimestamp("datepublication"),
                         result.getString("localization")
                 );
@@ -73,7 +72,7 @@ public class MessageDAO extends DAO<MessageBDD>{
                             Statement.RETURN_GENERATED_KEYS
                     );
             prepare.setString(1, obj.getContent());
-            prepare.setInt(2, obj.getUser().getId());
+            prepare.setInt(2, obj.getIdUser());
             prepare.setTimestamp(3,obj.getDate());
             prepare.setString(4,obj.getLocalization());
             prepare.executeUpdate();
@@ -97,7 +96,7 @@ public class MessageDAO extends DAO<MessageBDD>{
                             ResultSet.CONCUR_UPDATABLE
                     ).executeUpdate(
                     "UPDATE message SET content = '" + obj.getContent() + "',"+
-                            " iduser = '" + obj.getUser().getId() + "'" + "',"+
+                            " iduser = '" + obj.getIdUser() + "'" + "',"+
                             " localization = '" + obj.getLocalization() + "'" +
                             " WHERE idmessage = " + obj.getIdMessage()
             );

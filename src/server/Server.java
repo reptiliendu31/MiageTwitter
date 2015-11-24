@@ -30,7 +30,7 @@ public class Server {
     private MessageProducer sender = null;
     private MessageConsumer receiver = null;
     private HashMap<Integer, MessageProducer> tempQueues;
-    private static int nbTempQueues = 0;
+    private static int nbTempQueues = 1;
 
     public static void main(String[] args) {
         Server s = new Server();
@@ -113,12 +113,19 @@ public class Server {
 
     public void initTemporaryQueue(Message req) {
         try {
+            // getting temp queue destination
             Destination tempo = req.getJMSReplyTo();
             MessageProducer mp = null;
             mp = session.createProducer(tempo);
+            // stockage producteur et id user
             tempQueues.put(nbTempQueues,mp);
-            TextMessage rep = session.createTextMessage("ACK - Temp queue created, number : " + nbTempQueues);
-            nbTempQueues++;
+
+            // envoi ack à l'user avec son numéro de queue
+            StreamMessage rep = session.createStreamMessage();
+            rep.clearBody();
+            rep.writeInt(nbTempQueues);
+            rep.setJMSType("RespInitTempQueue");
+
             mp.send(rep);
         } catch (JMSException e) {
             e.printStackTrace();
@@ -137,17 +144,26 @@ public class Server {
         }
     }
 
-    public void connection(String login, String password){
-        UserDAO usr = new UserDAO();
-        UserBDD user = usr.findbyLogin(login);
-        if(user != null){
-            System.out.println("User Found");
-            // envoi mess sur file tempo
-        }
-        else{
-            // envoi mess erreur
-            System.out.println("User not Found");
+    // connection method
+    // checks if user exists, and sends result to client
+    public void connection(int idClient, String login, String password){
+        try {
+            UserDAO usr = new UserDAO();
+            UserBDD user = usr.findbyLogin(login);
 
+            boolean isUser = (user != null);
+
+            // getting temp queue destination
+            MessageProducer mp = tempQueues.get(idClient);
+            StreamMessage rep = session.createStreamMessage();
+            rep.clearBody();
+            rep.writeBoolean(isUser);
+            rep.setJMSType("RespConnection");
+
+            mp.send(rep);
+
+        } catch (JMSException e) {
+            e.printStackTrace();
         }
     }
 }

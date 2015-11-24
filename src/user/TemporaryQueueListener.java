@@ -20,12 +20,27 @@ public class TemporaryQueueListener implements MessageListener {
 
     @Override
     public void onMessage(Message message) {
-        if (message instanceof TextMessage) {
-            TextMessage text = (TextMessage) message;
+        if (message instanceof StreamMessage) {
+            StreamMessage mess = (StreamMessage) message;
             try {
-                System.out.println("Received from temp queue : " + text.getText());
-            } catch (JMSException exception) {
-                System.err.println("Failed to get message text: " + exception);
+                switch (message.getJMSType()) {
+                    case "RespInitTempQueue" :
+                        int serverId = mess.readInt();
+                        System.out.println("Received temp queue ACK -> " + serverId);
+                        user.setServerID(serverId);
+                        break;
+                    case "RespConnection" :
+                        boolean result = mess.readBoolean();
+                        if (result) {
+                            System.out.println("Connexion OK");
+                        } else {
+                            System.out.println("Connexion KO");
+                        }
+                    default: break;
+                }
+
+            } catch (JMSException e) {
+                e.printStackTrace();
             }
         }else if(message instanceof ObjectMessage){
             ObjectMessage mess = (ObjectMessage) message;

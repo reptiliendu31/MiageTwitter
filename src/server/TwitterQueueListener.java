@@ -19,24 +19,7 @@ public class TwitterQueueListener implements MessageListener {
     }
     @Override
     public void onMessage(Message message) {
-        if (message instanceof TextMessage) {
-            TextMessage text = (TextMessage) message;
-            try {
-                System.out.println("Received from user : " + text.getText());
-
-                switch (text.getText().split(";")[0]) {
-                    case "Connexion" :
-                        // init temporary queue with login name
-                        System.out.println(" -temporary queue request");
-                        System.out.println("   -> sending ack to user");
-                        server.initTemporaryQueue(message);
-                }
-
-            } catch (JMSException exception) {
-                System.err.println("Failed to get message text: " + exception);
-            }
-        }
-        else if (message instanceof ObjectMessage){
+        if (message instanceof ObjectMessage){
             ObjectMessage mess = (ObjectMessage) message;
             try {
                 if(message.getJMSType().equals("SignIn")){
@@ -52,13 +35,22 @@ public class TwitterQueueListener implements MessageListener {
         else if (message instanceof StreamMessage){
             StreamMessage mess = (StreamMessage) message;
             try {
-                if(message.getJMSType().equals("Connection")){
-
-                    String login = mess.readString();
-                    String password = mess.readString();
-                    server.connection(login,password);
-                    System.out.println("test connexion : login = " + login + " password : " + password);
+                switch (message.getJMSType()) {
+                    case "InitTempQueue" :
+                        System.out.println(" -temporary queue request");
+                        System.out.println("   -> sending ack to user");
+                        server.initTemporaryQueue(message);
+                        break;
+                    case "Connection" :
+                        int serverId = mess.readInt();
+                        String login = mess.readString();
+                        String password = mess.readString();
+                        server.connection(serverId,login,password);
+                        System.out.println("test connexion : login = " + login + " password : " + password);
+                        break;
+                    default: break;
                 }
+
             } catch (JMSException e) {
                 e.printStackTrace();
             }

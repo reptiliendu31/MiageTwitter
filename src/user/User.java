@@ -20,20 +20,22 @@ import java.util.ArrayList;
  * Created by david on 06/11/2015.
  */
 public class User {
-    private Context context = null;
-    private ConnectionFactory factory = null;
-    private Connection connection = null;
-    private String factoryName = "ConnectionFactory";
-    private String topicMessages = "Messages";
-    private String twitterQueue = "twitter";
-    private Destination destMessages = null;
-    private Destination destTwitter = null;
-    private Session session = null;
-    private MessageConsumer receiverMessagesTopic = null;
-    private MessageProducer senderTwitterQueue = null;
-    private BufferedReader waiter = null;
-    private TemporaryQueue tempo = null;
-    private UserBDD userCourant=null;
+    private static final String factoryName = "ConnectionFactory";
+    private static final String topicMessages = "Messages";
+    private static final String twitterQueue = "twitter";
+
+    private Context context ;
+    private ConnectionFactory factory;
+    private Connection connection;
+    private Destination destMessages ;
+    private Destination destTwitter ;
+    private Session session ;
+    private MessageConsumer receiverMessagesTopic ;
+    private MessageProducer senderTwitterQueue ;
+    private BufferedReader waiter ;
+    private TemporaryQueue tempo ;
+    private UserBDD userCourant;
+    private int serverID;
 
     public static void main(String[] args) {
         User u = new User();
@@ -42,6 +44,7 @@ public class User {
 
     public User() {
         try {
+            serverID = 0;
             // create the JNDI initial context.
             context = new InitialContext();
 
@@ -119,7 +122,10 @@ public class User {
             tempo = session.createTemporaryQueue();
             MessageConsumer consumerTempo = session.createConsumer(tempo);
             consumerTempo.setMessageListener(new TemporaryQueueListener(this));
-            TextMessage req = session.createTextMessage("Connexion");
+            StreamMessage req = session.createStreamMessage();
+            req.clearBody();
+            req.setJMSType("InitTempQueue");
+
             req.setJMSReplyTo(tempo);
             senderTwitterQueue.send(req);
         } catch (JMSException e) {
@@ -203,21 +209,13 @@ public class User {
 
             StreamMessage req = session.createStreamMessage();
             req.clearBody();
+            // id serveur
+            req.writeInt(serverID);
             req.writeString(login);
             req.writeString(pwd);
             req.setJMSType("Connection");
             senderTwitterQueue.send(req);
-            System.out.println("envoie de la demande de connexion");
-
-           boolean co = connect(login, pwd);
-           if(co){
-               System.out.println("Connexion réussie !");
-           }else{
-               System.out.println("Connexion échouée !");
-
-           }
-
-
+            System.out.println("envoi de la demande de connexion");
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -227,22 +225,11 @@ public class User {
         }
     }
 
-    private boolean connect(String login, String pwd) {
 
-        UserDAO u = new UserDAO();
-        UserBDD user = u.findbyLogin(login);
-
-
-        if (user!=null){
-            if (user.getPassword().equals(pwd)){
-                userCourant=user;
-                return true;
-            }
-            return false;
-        }else{
-            return false;
-        }
+    public void setServerID(int id) {
+        serverID = id;
     }
+
 
     public void setUserCourant(UserBDD user){
         userCourant = user;
