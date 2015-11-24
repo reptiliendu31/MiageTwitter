@@ -114,7 +114,6 @@ public class User {
         }
     }
 
-
     public void menuUser(){
         System.out.println("Menu :");
         System.out.println("1 - Inscription");
@@ -124,13 +123,12 @@ public class User {
         waiter = new BufferedReader(new InputStreamReader(System.in));
         try {
             String choix = waiter.readLine();
-
             switch (choix){
                 case "1":
-                    inscription();
+                    signIn();
                     break;
                 case "2":
-                    sendMsgConnexion();
+                    sendMsgConnection();
                     break;
                 default:
                     System.out.println("Mauvais choix");
@@ -138,49 +136,51 @@ public class User {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
-    public void inscription() {
+    public void signIn() {
         try {
-        System.out.println("Choose login:");
-        waiter = new BufferedReader(new InputStreamReader(System.in));
-        String login = waiter.readLine();
-        System.out.println("Choose password:");
-        waiter = new BufferedReader(new InputStreamReader(System.in));
-        String pswd = waiter.readLine();
-        System.out.println("Choose name:");
-        waiter = new BufferedReader(new InputStreamReader(System.in));
-        String name = waiter.readLine();
-        System.out.println("Choose first name:");
-        waiter = new BufferedReader(new InputStreamReader(System.in));
-        String firstName = waiter.readLine();
-        InscriptionMessage(login,pswd,name,firstName);
-            System.out.println("Inscription envoyée");
-
+            System.out.println("Choose login:");
+            waiter = new BufferedReader(new InputStreamReader(System.in));
+            String login = waiter.readLine();
+            System.out.println("Choose password:");
+            waiter = new BufferedReader(new InputStreamReader(System.in));
+            String pswd = waiter.readLine();
+            System.out.println("Choose name:");
+            waiter = new BufferedReader(new InputStreamReader(System.in));
+            String name = waiter.readLine();
+            System.out.println("Choose first name:");
+            waiter = new BufferedReader(new InputStreamReader(System.in));
+            String firstName = waiter.readLine();
+            sendMsgSignIn(login, pswd, name, firstName);
+            System.out.println("Sign in sent");
         }
         catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void InscriptionMessage(String login, String pswd, String name, String fName) {
+    public void sendMsgSignIn(String login, String pswd, String name, String fName) {
         try {
-            UserBDD user = new UserBDD(login,pswd,name,fName);
-            ObjectMessage req = session.createObjectMessage(user);
+            // create message
+            StreamMessage req = session.createStreamMessage();
+            req.clearBody();
+            // id server
+            req.writeInt(serverID);
+            req.writeString(login);
+            req.writeString(pswd);
+            req.writeString(name);
+            req.writeString(fName);
             req.setJMSType("SignIn");
-            req.setJMSReplyTo(tempo);
             senderTwitterQueue.send(req);
-            System.out.println("envoie de la demande d'inscription");
-
+            System.out.println("Sent respSignIn");
         } catch (JMSException e) {
             e.printStackTrace();
         }
     }
 
-
     // send connexion demand
-    public void sendMsgConnexion(){
+    public void sendMsgConnection(){
         try {
             System.out.println("Enter login:");
             waiter = new BufferedReader(new InputStreamReader(System.in));
@@ -188,17 +188,15 @@ public class User {
             System.out.println("Enter password:");
             waiter = new BufferedReader(new InputStreamReader(System.in));
             String pwd = waiter.readLine();
-
-
             StreamMessage req = session.createStreamMessage();
             req.clearBody();
-            // id serveur
+            // id server
             req.writeInt(serverID);
             req.writeString(login);
             req.writeString(pwd);
             req.setJMSType("Connection");
             senderTwitterQueue.send(req);
-            System.out.println("envoi de la demande de sendMsgConnexion");
+            System.out.println("Sent connection request");
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -209,6 +207,7 @@ public class User {
     }
 
     // première connexion au serveur : demande de file temp pour communiquer
+
     public void sendMsgCreateTempQueue() {
         try {
             tempo = session.createTemporaryQueue();
@@ -217,7 +216,6 @@ public class User {
             StreamMessage req = session.createStreamMessage();
             req.clearBody();
             req.setJMSType("InitTempQueue");
-
             req.setJMSReplyTo(tempo);
             senderTwitterQueue.send(req);
         } catch (JMSException e) {
@@ -225,12 +223,31 @@ public class User {
         }
     }
 
-
     // réception
-
     // response from temp queue init
     public void respMsgTempQueue(int id) {
         serverID = id;
+    }
+
+    // réception
+    // response from temp queue init for sign in
+    public void respMsgTempQueueSignIn(boolean res) {
+        if(res){
+            System.out.println("Sign In successful");
+        }else{
+            System.out.println("Sign In Failed");
+        }
+    }
+
+    // réception
+    // response from temp queue init for connection
+    public void respMsgTempQueueConnection(boolean res) {
+        if(res){
+            System.out.println("Connexion successful");
+
+        }else{
+            System.out.println("Connexion Failed");
+        }
     }
 
 

@@ -23,10 +23,11 @@ public class TwitterQueueListener implements MessageListener {
             ObjectMessage mess = (ObjectMessage) message;
             try {
                 if(message.getJMSType().equals("SignIn")){
-                    UserBDD user = (UserBDD) mess.getObject();
+                    /*UserBDD user = (UserBDD) mess.getObject();
                     System.out.println("user test : " + user.getLogin());
-                    server.signIn(user);
+                    server.respSignIn(user);
                     System.out.println(user.toString());
+                    */
                 }
             } catch (JMSException e) {
                 e.printStackTrace();
@@ -34,6 +35,7 @@ public class TwitterQueueListener implements MessageListener {
         }
         else if (message instanceof StreamMessage){
             StreamMessage mess = (StreamMessage) message;
+            int serverId;
             try {
                 switch (message.getJMSType()) {
                     case "InitTempQueue" :
@@ -42,11 +44,18 @@ public class TwitterQueueListener implements MessageListener {
                         server.respInitTempQueue(message);
                         break;
                     case "Connection" :
-                        int serverId = mess.readInt();
+                        serverId = mess.readInt();
                         String login = mess.readString();
                         String password = mess.readString();
                         server.respConnection(serverId,login,password);
-                        System.out.println("test sendMsgConnexion : login = " + login + " password : " + password);
+                        break;
+                    case "SignIn" :
+                        serverId = mess.readInt();
+                        String loginS = mess.readString();
+                        String passwordS = mess.readString();
+                        String nameS = mess.readString();
+                        String firstNameS = mess.readString();
+                        server.respSignIn(serverId,loginS,passwordS,nameS,firstNameS);
                         break;
                     default: break;
                 }

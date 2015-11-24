@@ -20,6 +20,7 @@ public class TemporaryQueueListener implements MessageListener {
 
     @Override
     public void onMessage(Message message) {
+        boolean result;
         if (message instanceof StreamMessage) {
             StreamMessage mess = (StreamMessage) message;
             try {
@@ -29,12 +30,13 @@ public class TemporaryQueueListener implements MessageListener {
                         user.respMsgTempQueue(serverId);
                         break;
                     case "RespConnection" :
-                        boolean result = mess.readBoolean();
-                        if (result) {
-                            System.out.println("Connexion OK");
-                        } else {
-                            System.out.println("Connexion KO");
-                        }
+                        result = mess.readBoolean();
+                        user.respMsgTempQueueConnection(result);
+                        break;
+                    case "RespSignIn" :
+                        result = mess.readBoolean();
+                        user.respMsgTempQueueSignIn(result);
+                        break;
                     default: break;
                 }
 

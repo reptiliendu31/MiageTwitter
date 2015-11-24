@@ -125,19 +125,31 @@ public class Server {
             rep.clearBody();
             rep.writeInt(nbTempQueues);
             rep.setJMSType("RespInitTempQueue");
-
             mp.send(rep);
         } catch (JMSException e) {
             e.printStackTrace();
         }
     }
 
-    public void signIn(UserBDD user){
+    public void respSignIn(int idClient, String login, String password, String name, String firstName){
         UserDAO usr = new UserDAO();
+        UserBDD user = new UserBDD(login,password,name,firstName);
         user = usr.create(user);
-        if(user != null){
-            System.out.println("user created");
-            // envoi mess sur file tempo
+        boolean isUser = (user != null);
+        if(isUser){
+            try {
+                System.out.println("user created");
+                // getting temp queue destination
+                MessageProducer mp = tempQueues.get(idClient);
+                StreamMessage rep = null;
+                rep = session.createStreamMessage();
+                rep.clearBody();
+                rep.writeBoolean(isUser);
+                rep.setJMSType("RespSignIn");
+                mp.send(rep);
+            }catch (JMSException e) {
+                e.printStackTrace();
+            }
         }
         else{
             // envoi mess erreur
@@ -150,18 +162,14 @@ public class Server {
         try {
             UserDAO usr = new UserDAO();
             UserBDD user = usr.findbyLogin(login);
-
             boolean isUser = (user != null);
-
             // getting temp queue destination
             MessageProducer mp = tempQueues.get(idClient);
             StreamMessage rep = session.createStreamMessage();
             rep.clearBody();
             rep.writeBoolean(isUser);
             rep.setJMSType("RespConnection");
-
             mp.send(rep);
-
         } catch (JMSException e) {
             e.printStackTrace();
         }
