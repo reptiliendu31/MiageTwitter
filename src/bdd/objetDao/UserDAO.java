@@ -50,7 +50,7 @@ public class UserDAO extends DAO<UserBDD> {
                         result.getString("firstName")
                 );
                 userBDD.setId(result.getInt("iduser"));
-                /*
+
                 // récupération des messages liés à un user
                 ResultSet resultMessage = this.connect.createStatement(
                         ResultSet.TYPE_SCROLL_INSENSITIVE,
@@ -81,7 +81,7 @@ public class UserDAO extends DAO<UserBDD> {
                     while (resultAbonne.next()) {
                         userBDD.putSub(daoUser.find(resultAbonne.getInt(2)));
                     }
-                }*/
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -100,46 +100,8 @@ public class UserDAO extends DAO<UserBDD> {
                             "SELECT * FROM UserTwitter WHERE login = '" + log +"'"
                     );
             if(result.first()) {
-                userBDD = new UserBDD(
-                        result.getString("login"),
-                        result.getString("password"),
-                        result.getString("name"),
-                        result.getString("firstName")
-                );
-                int id = result.getInt("iduser");
-                /*
-                userBDD.setId(id);
-                // récupération des messages liés à un user
-                ResultSet resultMessage = this.connect.createStatement(
-                        ResultSet.TYPE_SCROLL_INSENSITIVE,
-                        ResultSet.CONCUR_UPDATABLE).executeQuery(
-                        "SELECT * FROM message WHERE iduser = " + id
-                );
+                userBDD = find(result.getInt("iduser"));
 
-                if (resultMessage.first()) {
-                    // ajout de chaque vélo dans la station
-                    DAO<MessageBDD> daoMessage = new MessageDAO();
-                    userBDD.putMessage(daoMessage.find(resultMessage.getInt(1)));
-                    while (resultMessage.next()) {
-                        userBDD.putMessage(daoMessage.find(resultMessage.getInt(1)));
-                    }
-                }
-
-                // récupération des abonnés liés à un user
-                ResultSet resultAbonne = this.connect.createStatement(
-                        ResultSet.TYPE_SCROLL_INSENSITIVE,
-                        ResultSet.CONCUR_UPDATABLE).executeQuery(
-                        "SELECT * FROM subscription WHERE iduser = " + id
-                );
-
-                if (resultAbonne.first()) {
-                    //
-                    DAO<UserBDD> daoUser = new UserDAO();
-                    userBDD.putSub(daoUser.find(resultAbonne.getInt(2)));
-                    while (resultAbonne.next()) {
-                        userBDD.putSub(daoUser.find(resultAbonne.getInt(2)));
-                    }
-                }*/
             }
         } catch (SQLException e) {
             e.printStackTrace();

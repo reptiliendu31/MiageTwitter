@@ -51,7 +51,7 @@ public class MessageDAO extends DAO<MessageBDD>{
                         result.getString("content"),
                         result.getInt("iduser"),
                         result.getTimestamp("datepublication"),
-                        result.getString("localization")
+                        result.getString("localisation")
                 );
                 mssBDD.setIdMessage(result.getInt("idmessage"));
             }
@@ -97,7 +97,7 @@ public class MessageDAO extends DAO<MessageBDD>{
                     ).executeUpdate(
                     "UPDATE message SET content = '" + obj.getContent() + "',"+
                             " iduser = '" + obj.getIdUser() + "'" + "',"+
-                            " localization = '" + obj.getLocalization() + "'" +
+                            " localisation = '" + obj.getLocalization() + "'" +
                             " WHERE idmessage = " + obj.getIdMessage()
             );
         } catch (SQLException e) {

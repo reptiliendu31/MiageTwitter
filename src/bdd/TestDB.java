@@ -27,9 +27,9 @@ public class TestDB {
             //UserBDD usr = new UserBDD("login"+i,"mdp"+i,"nom"+i,"fname"+i);
             //usr = userDAO.create(usr);
         }*/
-        //UserBDD usr = userDAO.findbyLogin("login1");
+        UserBDD usr = userDAO.findbyLogin("login1");
         UserBDD sub = userDAO.find(17);
-        //System.out.println(usr.toString());
+        System.out.println(usr.toString());
         System.out.println(sub.toString());
         //usr = userDAO.addSub(sub,usr,now);
         //usr = userDAO.removeSub(usr,sub);
