@@ -31,11 +31,16 @@ public class TemporaryQueueListener implements MessageListener {
                         break;
                     case "RespConnection" :
                         result = mess.readBoolean();
-                        user.respMsgTempQueueConnection(result);
+                        String login = mess.readString();
+                        user.respMsgTempQueueConnection(result, login);
                         break;
                     case "RespSignIn" :
                         result = mess.readBoolean();
                         user.respMsgTempQueueSignIn(result);
+                        break;
+                    case "RespSignOut" :
+                        result = mess.readBoolean();
+                        user.respMsgTempQueueSignOut(result);
                         break;
                     default: break;
                 }

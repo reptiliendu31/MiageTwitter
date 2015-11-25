@@ -33,6 +33,8 @@ public class User {
     private TemporaryQueue tempo ;
     private UserBDD userCourant;
     private int serverID;
+    private boolean connected = false;
+    private String login;
 
     public static void main(String[] args) {
         User u = new User();
@@ -115,23 +117,44 @@ public class User {
     }
 
     public void menuUser(){
-        System.out.println("Menu :");
-        System.out.println("1 - Inscription");
-        System.out.println("2 - Connexion");
-        System.out.println("3 - Recherche");
-        System.out.println("4 - Envoi message");
-        waiter = new BufferedReader(new InputStreamReader(System.in));
         try {
-            String choix = waiter.readLine();
-            switch (choix){
-                case "1":
-                    signIn();
-                    break;
-                case "2":
-                    sendMsgConnection();
-                    break;
-                default:
-                    System.out.println("Mauvais choix");
+            if(connected){
+                System.out.println("Menu :");
+                System.out.println("1 - Send Message");
+                System.out.println("2 - Search User");
+                System.out.println("3 - Sing Out");
+                waiter = new BufferedReader(new InputStreamReader(System.in));
+                String choix = waiter.readLine();
+                switch (choix) {
+                    case "1":
+                        //signIn();
+                        break;
+                    case "2":
+                        //sendMsgConnection();
+                        break;
+                    case "3":
+                        signOut();
+                        break;
+                    default:
+                        System.out.println("Mauvais choix");
+                }
+            }else {
+                System.out.println("Menu :");
+                System.out.println("1 - Sign In");
+                System.out.println("2 - Connexion");
+                waiter = new BufferedReader(new InputStreamReader(System.in));
+
+                String choix = waiter.readLine();
+                switch (choix) {
+                    case "1":
+                        signIn();
+                        break;
+                    case "2":
+                        sendMsgConnection();
+                        break;
+                    default:
+                        System.out.println("Mauvais choix");
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -160,6 +183,11 @@ public class User {
         }
     }
 
+    public void signOut() {
+        sendMsgSignOut(login);
+        System.out.println("Sign Out sent");
+    }
+
     public void sendMsgSignIn(String login, String pswd, String name, String fName) {
         try {
             // create message
@@ -174,6 +202,22 @@ public class User {
             req.setJMSType("SignIn");
             senderTwitterQueue.send(req);
             System.out.println("Sent respSignIn");
+        } catch (JMSException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendMsgSignOut(String login) {
+        try {
+            // create message
+            StreamMessage req = session.createStreamMessage();
+            req.clearBody();
+            // id server
+            req.writeInt(serverID);
+            req.writeString(login);
+            req.setJMSType("SignOut");
+            senderTwitterQueue.send(req);
+            System.out.println("Sent respSignOut");
         } catch (JMSException e) {
             e.printStackTrace();
         }
@@ -239,10 +283,22 @@ public class User {
         }
     }
 
+    public void respMsgTempQueueSignOut(boolean res) {
+        if(res){
+            System.out.println("Sign Out successful");
+            connected = false;
+            login = null;
+        }else{
+            System.out.println("Sign Out Failed");
+        }
+    }
+
     // réception
     // response from temp queue init for connection
-    public void respMsgTempQueueConnection(boolean res) {
+    public void respMsgTempQueueConnection(boolean res, String l) {
         if(res){
+            connected = true;
+            login = l;
             System.out.println("Connexion successful");
 
         }else{

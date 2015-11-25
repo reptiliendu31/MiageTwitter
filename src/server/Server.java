@@ -1,5 +1,6 @@
 package server;
 
+import javax.jws.soap.SOAPBinding;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -31,9 +32,12 @@ public class Server {
     private MessageConsumer receiver = null;
     private HashMap<Integer, MessageProducer> tempQueues;
     private static int nbTempQueues = 1;
+    private HashMap<UserBDD, Boolean> connectedUsers;
+
 
     public static void main(String[] args) {
         Server s = new Server();
+
     }
 
     public Server() {
@@ -41,6 +45,7 @@ public class Server {
         try {
             tempQueues = new HashMap<Integer, MessageProducer>();
 
+            connectedUsers = new HashMap<UserBDD, Boolean>();
             // create the JNDI initial context.
             context = new InitialContext();
 
@@ -156,6 +161,42 @@ public class Server {
         }
     }
 
+    public void respSignOut(int idClient, String login){
+        UserDAO usr = new UserDAO();
+        UserBDD user = usr.findbyLogin(login);
+        boolean isUser = (user != null);
+        if(isUser){
+            try {
+                if(connectedUsers.containsKey(user)){
+                    connectedUsers.remove(user);
+                    System.out.println("user signed out");
+                    // getting temp queue destination
+                    MessageProducer mp = tempQueues.get(idClient);
+                    StreamMessage rep = null;
+                    rep = session.createStreamMessage();
+                    rep.clearBody();
+                    rep.writeBoolean(isUser);
+                    rep.setJMSType("RespSignOut");
+                    mp.send(rep);
+                }else{
+                    // getting temp queue destination
+                    MessageProducer mp = tempQueues.get(idClient);
+                    StreamMessage rep = null;
+                    rep = session.createStreamMessage();
+                    rep.clearBody();
+                    rep.writeBoolean(false);
+                    rep.setJMSType("RespSignOut");
+                    mp.send(rep);
+                }
+            }catch (JMSException e) {
+                e.printStackTrace();
+            }
+        }
+        else{
+            // envoi mess erreur
+        }
+    }
+
     // respConnection method
     // checks if user exists, and sends result to client
     public void respConnection(int idClient, String login, String password){
@@ -163,11 +204,15 @@ public class Server {
             UserDAO usr = new UserDAO();
             UserBDD user = usr.findbyLogin(login);
             boolean isUser = (user != null);
+            if(isUser){
+                connectedUsers.put(user,true);
+            }
             // getting temp queue destination
             MessageProducer mp = tempQueues.get(idClient);
             StreamMessage rep = session.createStreamMessage();
             rep.clearBody();
             rep.writeBoolean(isUser);
+            rep.writeString(user.getLogin());
             rep.setJMSType("RespConnection");
             mp.send(rep);
         } catch (JMSException e) {
