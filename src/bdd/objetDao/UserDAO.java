@@ -181,19 +181,41 @@ public class UserDAO extends DAO<UserBDD> {
         return user;
     }
 
-    public UserBDD removeSub(UserBDD user, UserBDD sub) {
+    // faire une méthode addAbonne / removeAbonne / sendMessage
+    public boolean checkSub(UserBDD sub, UserBDD user) {
+
+            UserBDD userBDD = null;
+            int idSub = sub.getId();
+            int idUser = user.getId();
+            boolean res = false;
+            try {
+                ResultSet result = this .connect
+                        .createStatement(
+                                ResultSet.TYPE_SCROLL_INSENSITIVE,
+                                ResultSet.CONCUR_UPDATABLE
+                        ).executeQuery(
+                                "SELECT * FROM subscription WHERE subscriber = " + idSub + " AND iduser = " + idUser
+                        );
+                if(result.first()){
+                    res = true;
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return res;
+    }
+
+    public void removeSub(UserBDD sub, UserBDD user) {
         try {
-            this.connect
-                    .createStatement(
+
+            this.connect.createStatement(
                             ResultSet.TYPE_SCROLL_INSENSITIVE,
                             ResultSet.CONCUR_UPDATABLE
                     ).executeUpdate(
                     " DELETE FROM subscription WHERE iduser = " + user.getId() + " AND subscriber = " + sub.getId()
             );
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return user;
     }
 }

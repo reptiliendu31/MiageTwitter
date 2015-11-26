@@ -62,6 +62,18 @@ public class TwitterQueueListener implements MessageListener {
                         String loginSO = mess.readString();
                         server.respSignOut(serverId,loginSO);
                         break;
+                    case "Follow" :
+                        serverId = mess.readInt();
+                        String loginU = mess.readString();
+                        String loginF = mess.readString();
+                        server.respFollow(serverId, loginU,loginF);
+                        break;
+                    case "UnFollow" :
+                        serverId = mess.readInt();
+                        String loginUN = mess.readString();
+                        String loginFN = mess.readString();
+                        server.respUnFollow(serverId, loginUN,loginFN);
+                        break;
                     default: break;
                 }
 

@@ -30,9 +30,8 @@ public class TemporaryQueueListener implements MessageListener {
                         user.respMsgTempQueue(serverId);
                         break;
                     case "RespConnection" :
-                        result = mess.readBoolean();
-                        String login = mess.readString();
-                        user.respMsgTempQueueConnection(result, login);
+                        String error = mess.readString();
+                        user.respMsgTempQueueConnection(error);
                         break;
                     case "RespSignIn" :
                         result = mess.readBoolean();
@@ -41,6 +40,14 @@ public class TemporaryQueueListener implements MessageListener {
                     case "RespSignOut" :
                         result = mess.readBoolean();
                         user.respMsgTempQueueSignOut(result);
+                        break;
+                    case "RespFollow" :
+                        result = mess.readBoolean();
+                        user.respMsgTempQueueFollow(result);
+                        break;
+                    case "RespUnFollow" :
+                        result = mess.readBoolean();
+                        user.respMsgTempQueueUnFollow(result);
                         break;
                     default: break;
                 }
@@ -51,9 +58,13 @@ public class TemporaryQueueListener implements MessageListener {
         }else if(message instanceof ObjectMessage){
             ObjectMessage mess = (ObjectMessage) message;
             try {
-                // do smthing
-
-
+                switch (mess.getJMSType()) {
+                    case "RespConnection" :
+                        UserBDD usr = (UserBDD)mess.getObject();
+                        user.respMsgTempQueueConnection(usr);
+                        break;
+                    default: break;
+                }
             } catch (Exception exception) {
                 System.err.println("Failed to get message text: " + exception);
             }

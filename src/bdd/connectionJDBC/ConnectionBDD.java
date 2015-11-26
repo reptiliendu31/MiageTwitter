@@ -11,11 +11,11 @@ import java.sql.Statement;
  * Created by Stéfan on 08/11/2015.
  */
 public class ConnectionBDD {
-    private static String url = "jdbc:postgresql://localhost:5432/twitterJMS";
+    private static String url = "jdbc:postgresql://localhost:5432/twitterMiage";
 
     private static String user = "postgres";
 
-    private static String passwd = "a";
+    private static String passwd = "twitter";
 
     private static Connection connect;
 

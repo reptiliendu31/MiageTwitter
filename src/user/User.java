@@ -34,7 +34,6 @@ public class User {
     private UserBDD userCourant;
     private int serverID;
     private boolean connected = false;
-    private String login;
 
     public static void main(String[] args) {
         User u = new User();
@@ -122,7 +121,9 @@ public class User {
                 System.out.println("Menu :");
                 System.out.println("1 - Send Message");
                 System.out.println("2 - Search User");
-                System.out.println("3 - Sing Out");
+                System.out.println("3 - Follow");
+                System.out.println("4 - UnFollow");
+                System.out.println("5 - Sign Out");
                 waiter = new BufferedReader(new InputStreamReader(System.in));
                 String choix = waiter.readLine();
                 switch (choix) {
@@ -133,6 +134,12 @@ public class User {
                         //sendMsgConnection();
                         break;
                     case "3":
+                        sendMsgFollow();
+                        break;
+                    case "4":
+                        sendMsgUnFollow();
+                        break;
+                    case "5":
                         signOut();
                         break;
                     default:
@@ -184,7 +191,7 @@ public class User {
     }
 
     public void signOut() {
-        sendMsgSignOut(login);
+        sendMsgSignOut(userCourant.getLogin());
         System.out.println("Sign Out sent");
     }
 
@@ -250,6 +257,54 @@ public class User {
         }
     }
 
+    // send follow demand
+    public void sendMsgFollow(){
+        try {
+            System.out.println("Enter login user you want to follow:");
+            waiter = new BufferedReader(new InputStreamReader(System.in));
+            String login = waiter.readLine();
+            StreamMessage req = session.createStreamMessage();
+            req.clearBody();
+            // id server
+            req.writeInt(serverID);
+            req.writeString(userCourant.getLogin());
+            req.writeString(login);
+            req.setJMSType("Follow");
+            senderTwitterQueue.send(req);
+            System.out.println("Sent Follow request");
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        catch (JMSException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // send follow demand
+    public void sendMsgUnFollow(){
+        try {
+            System.out.println("Enter login user you want to unFollow:");
+            waiter = new BufferedReader(new InputStreamReader(System.in));
+            String login = waiter.readLine();
+            StreamMessage req = session.createStreamMessage();
+            req.clearBody();
+            // id server
+            req.writeInt(serverID);
+            req.writeString(userCourant.getLogin());
+            req.writeString(login);
+            req.setJMSType("UnFollow");
+            senderTwitterQueue.send(req);
+            System.out.println("Sent UnFollow request");
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        catch (JMSException e) {
+            e.printStackTrace();
+        }
+    }
+
     // première connexion au serveur : demande de file temp pour communiquer
 
     public void sendMsgCreateTempQueue() {
@@ -288,23 +343,39 @@ public class User {
         if(res){
             System.out.println("Sign Out successful");
             connected = false;
-            login = null;
+            userCourant = null;
         }else{
             System.out.println("Sign Out Failed");
         }
     }
 
+    public void respMsgTempQueueFollow(boolean res) {
+        if(res){
+            System.out.println("Follow successful");
+        }else{
+            System.out.println("Follow Failed");
+        }
+    }
+
+    public void respMsgTempQueueUnFollow(boolean res) {
+        if(res){
+            System.out.println("UnFollow successful");
+        }else{
+            System.out.println("UnFollow Failed");
+        }
+    }
+
     // réception
     // response from temp queue init for connection
-    public void respMsgTempQueueConnection(boolean res, String l) {
-        if(res){
+    public void respMsgTempQueueConnection(String error) {
+        System.out.println("Connexion Failed -> " + error);
+    }
+    // réception
+    // response from temp queue init for connection
+    public void respMsgTempQueueConnection(UserBDD usr) {
             connected = true;
-            login = l;
+            setUserCourant(usr);
             System.out.println("Connexion successful");
-
-        }else{
-            System.out.println("Connexion Failed");
-        }
     }
 
 

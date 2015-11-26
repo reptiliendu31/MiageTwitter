@@ -7,6 +7,7 @@ import javax.naming.NamingException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.jms.*;
@@ -32,7 +33,7 @@ public class Server {
     private MessageConsumer receiver = null;
     private HashMap<Integer, MessageProducer> tempQueues;
     private static int nbTempQueues = 1;
-    private HashMap<UserBDD, Boolean> connectedUsers;
+    private HashMap<String, Boolean> connectedUsers;
 
 
     public static void main(String[] args) {
@@ -45,14 +46,15 @@ public class Server {
         try {
             tempQueues = new HashMap<Integer, MessageProducer>();
 
-            connectedUsers = new HashMap<UserBDD, Boolean>();
+            connectedUsers = new HashMap<String, Boolean>();
 
             // on peuple tous les users pas connectés
             UserDAO userDAO = new UserDAO();
             for (UserBDD u : userDAO.getInstances()
                  ) {
-                connectedUsers.put(u,false);
+                connectedUsers.put(u.getLogin(),false);
             }
+
             // create the JNDI initial context.
             context = new InitialContext();
 
@@ -212,34 +214,129 @@ public class Server {
         try {
             UserDAO usr = new UserDAO();
             UserBDD user = usr.findbyLogin(login);
+            String errorConnection="";
             boolean isUser = (user != null);
             if(isUser){
-                connectedUsers.put(user,false);
+                if(user.getPassword().equals(password)){
+                     if(!isUserConnected(user)){
+                        connectUserToServer(user);
+                        System.out.println("User connected");
+                     }else{
+                        isUser = false;
+                        errorConnection = "User already connected";
+                    }
+                }else{
+                    isUser = false;
+                    errorConnection = "Wrong password";
+                }
             }
-            // getting temp queue destination
-            MessageProducer mp = tempQueues.get(idClient);
-            StreamMessage rep = session.createStreamMessage();
-            rep.clearBody();
-            rep.writeBoolean(isUser);
-            rep.writeString(user.getLogin());
-            rep.setJMSType("RespConnection");
-            mp.send(rep);
+            if(isUser){
+                // getting temp queue destination
+                MessageProducer mp = tempQueues.get(idClient);
+                ObjectMessage rep = session.createObjectMessage();
+                rep.clearBody();
+                rep.setObject(user);
+                rep.setJMSType("RespConnection");
+                mp.send(rep);
+            }else{
+                // getting temp queue destination
+                MessageProducer mp = tempQueues.get(idClient);
+                StreamMessage rep = session.createStreamMessage();
+                rep.clearBody();
+                rep.writeString(errorConnection);
+                rep.setJMSType("RespConnection");
+                mp.send(rep);
+            }
+
         } catch (JMSException e) {
             e.printStackTrace();
         }
     }
 
 
+    // respConnection method
+    // checks if user didn't already follow the user, follow user if not and sends result to client
+    public void respFollow(int idClient, String loginUser, String loginSub){
+        try {
+            UserDAO usr = new UserDAO();
+            UserDAO usrF = new UserDAO();
+            UserBDD user = usr.findbyLogin(loginUser);
+            UserBDD userF = usrF.findbyLogin(loginSub);
+            Timestamp now = new Timestamp(System.currentTimeMillis());
+            String resp;
+            boolean isUser = (user != null && userF != null);
+            if(isUser){
+                    if(!usr.checkSub(userF,user)){
+                        user = usr.addSub(userF,user,now);
+                        isUser = (user != null);
+                        if(isUser){
+                            System.out.println("User follow " + userF.getLogin());
+                        }
+                    }else{
+                        isUser = false;
+                        System.out.println("User already followed " + userF.getLogin());
+                    }
+                // getting temp queue destination
+                    MessageProducer mp = tempQueues.get(idClient);
+                    StreamMessage rep = session.createStreamMessage();
+                    rep.clearBody();
+                    rep.writeBoolean(isUser);
+                    rep.setJMSType("RespFollow");
+                    mp.send(rep);
+            }
+        } catch (JMSException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // respConnection method
+    // checks if user unfollow, and sends result to client
+    public void respUnFollow(int idClient, String loginUser, String loginSub){
+        try {
+            UserDAO usr = new UserDAO();
+            UserDAO usrF = new UserDAO();
+            UserBDD user = usr.findbyLogin(loginUser);
+            UserBDD userF = usrF.findbyLogin(loginSub);
+            boolean isUser = (user != null && userF != null);
+            if(isUser){
+                if(usr.checkSub(userF,user)){
+                    usr.removeSub(userF, user);
+                    // check if deleted
+                    if(!usr.checkSub(userF,user)){
+                        System.out.println("User UnFollow " + userF.getLogin());
+                    }else{
+                        System.out.println("User not UnFollowed " + userF.getLogin());
+                    }
+                }else{
+                    isUser = false;
+                    System.out.println("User already UnFollowed " + userF.getLogin());
+                }
+            }else{
+                System.out.println("Sub Unknow " + loginSub);
+            }
+            // getting temp queue destination
+            MessageProducer mp = tempQueues.get(idClient);
+            StreamMessage rep = session.createStreamMessage();
+            rep.clearBody();
+            rep.writeBoolean(isUser);
+            rep.setJMSType("RespUnFollow");
+            mp.send(rep);
+        } catch (JMSException e) {
+            e.printStackTrace();
+        }
+    }
+
     // renvoie si le user est connecté au serveur
     public boolean isUserConnected(UserBDD u) {
-        return connectedUsers.get(u);
+        return connectedUsers.get(u.getLogin());
     }
 
     public boolean connectUserToServer(UserBDD u) {
-        return connectedUsers.put(u,true);
+        return connectedUsers.put(u.getLogin(),true);
     }
 
     public boolean disconnectUserFromServer(UserBDD u) {
-        return connectedUsers.put(u,false);
+        return connectedUsers.put(u.getLogin(),false);
     }
+
 }
