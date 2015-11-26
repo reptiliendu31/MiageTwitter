@@ -278,6 +278,7 @@ public class User {
     public void respMsgTempQueueSignIn(boolean res) {
         if(res){
             System.out.println("Sign In successful");
+            sendMsgSignOut(userCourant.getLogin());
         }else{
             System.out.println("Sign In Failed");
         }

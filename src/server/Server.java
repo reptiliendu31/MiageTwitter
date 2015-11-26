@@ -46,6 +46,13 @@ public class Server {
             tempQueues = new HashMap<Integer, MessageProducer>();
 
             connectedUsers = new HashMap<UserBDD, Boolean>();
+
+            // on peuple tous les users pas connectés
+            UserDAO userDAO = new UserDAO();
+            for (UserBDD u : userDAO.getInstances()
+                 ) {
+                connectedUsers.put(u,false);
+            }
             // create the JNDI initial context.
             context = new InitialContext();
 
@@ -167,8 +174,10 @@ public class Server {
         boolean isUser = (user != null);
         if(isUser){
             try {
-                if(connectedUsers.containsKey(user)){
-                    connectedUsers.remove(user);
+                // si l'utilisateur est connecté
+                if(isUserConnected(user)){
+                    // on le déconnecte
+                    disconnectUserFromServer(user);
                     System.out.println("user signed out");
                     // getting temp queue destination
                     MessageProducer mp = tempQueues.get(idClient);
@@ -220,6 +229,18 @@ public class Server {
         }
     }
 
-    // réception msg
+
+    // renvoie si le user est connecté au serveur
+    public boolean isUserConnected(UserBDD u) {
+        return connectedUsers.get(u);
+    }
+
+    public boolean connectUserToServer(UserBDD u) {
+        return connectedUsers.put(u,true);
+    }
+
+    public boolean disconnectUserFromServer(UserBDD u) {
+        return connectedUsers.put(u,false);
+    }
 
 }

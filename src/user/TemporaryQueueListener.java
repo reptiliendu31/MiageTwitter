@@ -51,14 +51,10 @@ public class TemporaryQueueListener implements MessageListener {
         }else if(message instanceof ObjectMessage){
             ObjectMessage mess = (ObjectMessage) message;
             try {
-                if(user != null){
-                    UserBDD usr = (UserBDD) mess.getObject();
-                    user.setUserCourant(usr);
-                    System.out.println("Connection established!");
-                }else{
-                    System.out.println("Error Connection");
-                }
-            } catch (JMSException exception) {
+                // do smthing
+
+
+            } catch (Exception exception) {
                 System.err.println("Failed to get message text: " + exception);
             }
         }
