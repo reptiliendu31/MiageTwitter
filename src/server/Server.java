@@ -150,11 +150,11 @@ public class Server {
         boolean isUser = (user != null);
         if(isUser){
             try {
+
                 System.out.println("user created");
                 // getting temp queue destination
                 MessageProducer mp = tempQueues.get(idClient);
-                StreamMessage rep = null;
-                rep = session.createStreamMessage();
+                StreamMessage rep = session.createStreamMessage();
                 rep.clearBody();
                 rep.writeBoolean(isUser);
                 rep.setJMSType("RespSignIn");
@@ -214,7 +214,7 @@ public class Server {
             UserBDD user = usr.findbyLogin(login);
             boolean isUser = (user != null);
             if(isUser){
-                connectedUsers.put(user,true);
+                connectedUsers.put(user,false);
             }
             // getting temp queue destination
             MessageProducer mp = tempQueues.get(idClient);
@@ -242,5 +242,4 @@ public class Server {
     public boolean disconnectUserFromServer(UserBDD u) {
         return connectedUsers.put(u,false);
     }
-
 }
