@@ -12,6 +12,7 @@ import javax.naming.NamingException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Calendar;
 
 /**
  * Created by david on 06/11/2015.
@@ -318,6 +319,28 @@ public class User {
             req.setJMSReplyTo(tempo);
             senderTwitterQueue.send(req);
         } catch (JMSException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendTweet(){
+        try {
+            System.out.println("Taper votre tweet:");
+            waiter = new BufferedReader(new InputStreamReader(System.in));
+            String tweet = waiter.readLine();
+            StreamMessage req = session.createStreamMessage();
+            req.clearBody();
+            // Construction du streammessage
+            req.writeInt(serverID);
+            req.writeString(userCourant.getLogin());
+            req.writeString(tweet);
+            req.writeLong(System.currentTimeMillis());
+            req.setJMSType("Tweet");
+            System.out.println("Sent Tweet");
+            senderTwitterQueue.send(req);
+        } catch (JMSException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

@@ -326,17 +326,30 @@ public class Server {
         }
     }
 
+    /**
+     * Traitement d'un tweet reçu dans la file, enregistrement en bdd + publication sur le topic
+     * @param serverId
+     * @param usercourant
+     * @param tweet
+     */
+    public void respTweet(int serverId, String usercourant, String tweet,long time) {
+        UserDAO u = new UserDAO();
+        UserBDD user = u.findbyLogin(usercourant);
+        MessageBDD m = new MessageBDD(tweet,user.getId(),time,user.getlo);
+    }
+
     // renvoie si le user est connecté au serveur
     public boolean isUserConnected(UserBDD u) {
         return connectedUsers.get(u.getLogin());
     }
 
     public boolean connectUserToServer(UserBDD u) {
-        return connectedUsers.put(u.getLogin(),true);
+        return connectedUsers.put(u.getLogin(), true);
     }
 
     public boolean disconnectUserFromServer(UserBDD u) {
         return connectedUsers.put(u.getLogin(),false);
     }
+
 
 }

@@ -1,11 +1,17 @@
 <component name="libraryTable">
   <library name="OpenJMS">
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/dependencies/openjms-0.7.7-beta-1/lib" />
+      <root url="file://$PROJECT_DIR$/openjms-0.7.7-beta-1/lib" />
+      <root url="file://$PROJECT_DIR$/openjms-0.7.7-beta-1/lib" />
+      <root url="jar://$USER_HOME$/dev/openjms-0.7.7-beta-1/lib/jms-1.1.jar!/" />
+      <root url="jar://$USER_HOME$/dev/openjms-0.7.7-beta-1/lib/openjms-0.7.7-beta-1.jar!/" />
+      <root url="file://$USER_HOME$/dev/openjms-0.7.7-beta-1/lib" />
+      <root url="jar://$PROJECT_DIR$/dependencies/postgresql-9.4-1205.jdbc42.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
-    <jarDirectory url="file://$PROJECT_DIR$/dependencies/openjms-0.7.7-beta-1/lib" recursive="false" />
+    <jarDirectory url="file://$USER_HOME$/dev/openjms-0.7.7-beta-1/lib" recursive="false" />
+    <jarDirectory url="file://$PROJECT_DIR$/openjms-0.7.7-beta-1/lib" recursive="false" />
     <jarDirectory url="file://$PROJECT_DIR$/openjms-0.7.7-beta-1/lib" recursive="false" />
   </library>
 </component>
