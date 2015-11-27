@@ -40,6 +40,14 @@ public class Server {
 
     public static void main(String[] args) {
         Server s = new Server();
+        System.out.println("Server launched !");
+        System.out.println("Press enter to end process...");
+        BufferedReader waiter = new BufferedReader(new InputStreamReader(System.in));
+        try {
+            waiter.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -84,21 +92,9 @@ public class Server {
 
             // start the respConnection, to enable message sends
             connection.start();
-            System.out.println("Waiting for messages...");
             BufferedReader waiter = new BufferedReader(new InputStreamReader(System.in));
             waiter.readLine();
-            System.out.println("sending...");
-            ArrayList<MessageBDD> l = MessageBDD.testServ();
-            for (MessageBDD m : l) {
-                TextMessage message = session.createTextMessage();
-                message.setText(m.getContent());
-                sender.send(message);
-                System.out.println("Sent: " + message.getText());
-            }
 
-            System.out.println("Waiting for messages...");
-            waiter = new BufferedReader(new InputStreamReader(System.in));
-            waiter.readLine();
 
         } catch (JMSException exception) {
             exception.printStackTrace();
@@ -154,18 +150,13 @@ public class Server {
             if (!usr.checkLogin(login)) {
                 UserBDD user = new UserBDD(login, password, name, firstName, localisation);
                 user = usr.create(user);
-                boolean isUser = (user != null);
-                // check if user created
-                if (isUser) {
-                    System.out.println("user created");
-                }else {
-                    System.out.println("user creation failed");
-                }
+                // ajout de l'user à la hashmap des users
+                connectedUsers.put(user.getLogin(),false);
                 // getting temp queue destination
                 MessageProducer mp = tempQueues.get(idClient);
                 StreamMessage rep = session.createStreamMessage();
                 rep.clearBody();
-                rep.writeBoolean(isUser);
+                rep.writeBoolean(true);
                 rep.setJMSType("RespSignIn");
                 mp.send(rep);
             }else{
@@ -224,7 +215,7 @@ public class Server {
 
     // respConnection method
     // checks if user exists, and sends result to client
-    public void respConnection(int idClient, String login, String password, String localisation){
+    public void respConnection(int idClient, String login, String password){
         try {
             UserDAO usr = new UserDAO();
             UserBDD user = usr.findbyLogin(login);
@@ -232,28 +223,17 @@ public class Server {
             boolean isUser = (user != null);
             if(isUser){
                 if(user.getPassword().equals(password)){
-                    if(!isUserConnected(user)){
+                     if(!isUserConnected(user)){
                         connectUserToServer(user);
                         System.out.println("User connected");
-                        System.out.println("localisation = " + localisation);
-                        // update localisation
-                        if(!localisation.equals("null")){
-                            System.out.println("test if");
-                            user.setLocalisation(localisation);
-                            user = usr.update(user);
-                            isUser = (user != null);
-                            System.out.println("value isUser" + isUser);
-                        }
-                    }else{
+                     }else{
                         isUser = false;
-                        errorConnection = "User already connected";
+                        errorConnection = "Utilisateur déjà connecté";
                     }
                 }else{
                     isUser = false;
-                    errorConnection = "Wrong password";
+                    errorConnection = "Mauvais password";
                 }
-            }
-            if(isUser){
                 // getting temp queue destination
                 MessageProducer mp = tempQueues.get(idClient);
                 ObjectMessage rep = session.createObjectMessage();
@@ -261,7 +241,8 @@ public class Server {
                 rep.setObject(user);
                 rep.setJMSType("RespConnection");
                 mp.send(rep);
-            }else{
+            } else {
+                errorConnection = "Mauvais nom d'utilisateur";
                 // getting temp queue destination
                 MessageProducer mp = tempQueues.get(idClient);
                 StreamMessage rep = session.createStreamMessage();
@@ -270,6 +251,10 @@ public class Server {
                 rep.setJMSType("RespConnection");
                 mp.send(rep);
             }
+            if(isUser){
+            }else{
+            }
+
         } catch (JMSException e) {
             e.printStackTrace();
         }
@@ -382,17 +367,16 @@ public class Server {
     }
 
     /**
-     * Traitement d'un tweet reçu dans la file, enregistrement en bdd + publication sur le topic
-     * @param serverId
+     * Traitement d'un tweet reçu dans la file, enregistrement en bdd + publication sur le topic + envoi vers user (ack)
+     * @param idClient
      * @param usercourant
      * @param tweet
      */
-    public void respTweet(int serverId, String usercourant, String tweet,long time) {
+    public void respTweet(int idClient, String usercourant, String tweet,long time) {
         UserDAO u = new UserDAO();
         Timestamp t = new Timestamp(time);
         UserBDD user = u.findbyLogin(usercourant);
         MessageBDD m = new MessageBDD(tweet,user.getId(),t,user.getLocalisation());
-
         MessageDAO mess = new MessageDAO();
         //adding tweet in db
         mess.create(m);
@@ -400,12 +384,22 @@ public class Server {
         //sending to topic
 
         try {
+            // to topic
             StreamMessage req = session.createStreamMessage();
             req.clearBody();
             req.writeString(usercourant);
             req.writeString(m.getContent());
             req.setJMSType("Tweet");
             sender.send(req);
+
+            // ack for user
+            MessageProducer mp = tempQueues.get(idClient);
+            StreamMessage rep = session.createStreamMessage();
+            rep.clearBody();
+            rep.writeBoolean(true);
+            rep.setJMSType("RespTweet");
+            mp.send(rep);
+
         } catch (JMSException e) {
             e.printStackTrace();
         }

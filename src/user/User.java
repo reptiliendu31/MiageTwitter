@@ -3,7 +3,9 @@ package user;
 /**
  * Created by Yoan on 07/11/2015.
  */
+import bdd.objetBdd.MessageBDD;
 import bdd.objetBdd.UserBDD;
+import user.ihm.UserIHM;
 
 import javax.jms.*;
 import javax.naming.Context;
@@ -12,6 +14,7 @@ import javax.naming.NamingException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 /**
@@ -35,14 +38,25 @@ public class User {
     private UserBDD userCourant;
     private int serverID;
     private boolean connected = false;
+    private UserIHM ihm;
 
     public static void main(String[] args) {
         User u = new User();
+        System.out.println("User launched !");
+        System.out.println("Press enter to end process...");
+        BufferedReader waiter = new BufferedReader(new InputStreamReader(System.in));
+        try {
+            waiter.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
     public User() {
         try {
+            ihm = new UserIHM(this);
+
             serverID = 0;
             // create the JNDI initial context.
             context = new InitialContext();
@@ -73,27 +87,15 @@ public class User {
             // start the respConnection, to enable message receipt
             connection.start();
 
-            System.out.println("Waiting for messages...");
-            System.out.println("Press [return] to send messages to topic");
+            System.out.println("sending create temp request...");
+            sendMsgCreateTempQueue();
 
+            //System.out.println("Waiting for messages...");
             waiter = new BufferedReader(new InputStreamReader(System.in));
             waiter.readLine();
 
-            System.out.println("sending create temp request...");
-            sendMsgCreateTempQueue();
-            while (true){
-                menuUser();
-            }
-            //System.out.println("Waiting for messages...");
-            //waiter = new BufferedReader(new InputStreamReader(System.in));
-            //waiter.readLine();
 
-
-        } catch (IOException exception) {
-            exception.printStackTrace();
-        } catch (JMSException exception) {
-            exception.printStackTrace();
-        } catch (NamingException exception) {
+        } catch (Exception exception) {
             exception.printStackTrace();
         } finally {
             // close the context
@@ -113,59 +115,6 @@ public class User {
                     exception.printStackTrace();
                 }
             }
-        }
-    }
-
-    public void menuUser(){
-        try {
-            if(connected){
-                System.out.println("Menu :");
-                System.out.println("1 - Send Message");
-                System.out.println("2 - Search User");
-                System.out.println("3 - Follow");
-                System.out.println("4 - UnFollow");
-                System.out.println("5 - Sign Out");
-                waiter = new BufferedReader(new InputStreamReader(System.in));
-                String choix = waiter.readLine();
-                switch (choix) {
-                    case "1":
-                        sendTweet();
-                        break;
-                    case "2":
-                        sendMsgSearch();
-                        break;
-                    case "3":
-                        sendMsgFollow();
-                        break;
-                    case "4":
-                        sendMsgUnFollow();
-                        break;
-                    case "5":
-                        signOut();
-                        break;
-                    default:
-                        System.out.println("Mauvais choix");
-                }
-            }else {
-                System.out.println("Menu :");
-                System.out.println("1 - Sign In");
-                System.out.println("2 - Connexion");
-                waiter = new BufferedReader(new InputStreamReader(System.in));
-
-                String choix = waiter.readLine();
-                switch (choix) {
-                    case "1":
-                        signIn();
-                        break;
-                    case "2":
-                        sendMsgConnection();
-                        break;
-                    default:
-                        System.out.println("Mauvais choix");
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -195,8 +144,10 @@ public class User {
     }
 
     public void signOut() {
-        sendMsgSignOut(userCourant.getLogin());
-        System.out.println("Sign Out sent");
+        if (userCourant != null) {
+            sendMsgSignOut(userCourant.getLogin());
+            System.out.println("Sign Out sent");
+        }
     }
 
     public void sendMsgSignIn(String login, String pswd, String name, String fName, String localisation) {
@@ -236,43 +187,17 @@ public class User {
     }
 
     // send connexion demand
-    public void sendMsgConnection(){
+    public void sendMsgConnection(String login, String pwd){
         try {
-            System.out.println("Enter login:");
-            waiter = new BufferedReader(new InputStreamReader(System.in));
-            String login = waiter.readLine();
-            System.out.println("Enter password:");
-            waiter = new BufferedReader(new InputStreamReader(System.in));
-            String pwd = waiter.readLine();
-            System.out.println("Do you want to change your localisation ? Y / N");
-            waiter = new BufferedReader(new InputStreamReader(System.in));
-            String respLoca = waiter.readLine();
-            String loca = "null";
-            switch (respLoca){
-                case "Y":
-                    System.out.println("Enter new Localisation:");
-                    waiter = new BufferedReader(new InputStreamReader(System.in));
-                    loca = waiter.readLine();
-                    break;
-                case "N":
-                    loca = "null";
-                    break;
-                default:break;
-            }
-            System.out.println("localisation entrée : " + loca);
             StreamMessage req = session.createStreamMessage();
             req.clearBody();
             // id server
             req.writeInt(serverID);
             req.writeString(login);
             req.writeString(pwd);
-            req.writeString(loca);
             req.setJMSType("Connection");
             senderTwitterQueue.send(req);
             System.out.println("Sent connection request");
-        }
-        catch (IOException e) {
-            e.printStackTrace();
         }
         catch (JMSException e) {
             e.printStackTrace();
@@ -367,11 +292,8 @@ public class User {
         }
     }
 
-    public void sendTweet(){
+    public void sendTweet(String tweet){
         try {
-            System.out.println("Taper votre tweet:");
-            waiter = new BufferedReader(new InputStreamReader(System.in));
-            String tweet = waiter.readLine();
             StreamMessage req = session.createStreamMessage();
             req.clearBody();
             // Construction du streammessage
@@ -382,17 +304,20 @@ public class User {
             req.setJMSType("Tweet");
             System.out.println("Sent Tweet");
             senderTwitterQueue.send(req);
+            userCourant.putMessage(new MessageBDD(tweet, userCourant.getId(), new Timestamp(System.currentTimeMillis()), userCourant.getLocalisation()));
         } catch (JMSException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     // réception
     // response from temp queue init
+    // on peut initialiser l'ihm, la connexion s'est faire
     public void respMsgTempQueue(int id) {
         serverID = id;
+        // init ihm
+        ihm.setVisible(true);
+        System.out.println("Temp queue with server successful");
     }
 
     // réception
@@ -400,9 +325,11 @@ public class User {
     public void respMsgTempQueueSignIn(boolean res) {
         if(res){
             System.out.println("Sign In successful");
-            sendMsgSignOut(userCourant.getLogin());
+            ihm.callbackSubscribeSuccessful();
         }else{
             System.out.println("Sign In Failed");
+            userCourant = null;
+            ihm.callbackSubscribeFailed();
         }
     }
 
@@ -438,8 +365,10 @@ public class User {
 
     // réception
     // response from temp queue init for connection
+    // cas erreur
     public void respMsgTempQueueConnection(String error) {
         System.out.println("Connexion Failed -> " + error);
+        ihm.callbackConnexionFailed(error);
     }
     // réception
     // response from temp queue init for connection
@@ -447,6 +376,7 @@ public class User {
         connected = true;
         setUserCourant(usr);
         System.out.println("Connexion successful");
+        ihm.callbackConnexionSuccessful();
     }
 
     // réception
@@ -458,7 +388,18 @@ public class User {
         }
     }
 
+    // maj tweets tableau IHM de l'user
+    public void respMsgTempQueueTweet(boolean result) {
+        if (result) {
+            System.out.println("Tweet processed by server");
+            ihm.majTweetsUser();
+        }
+    }
+
+
     public void setUserCourant(UserBDD user){
         userCourant = user;
     }
+
+    public UserBDD getUserCourant() { return userCourant;}
 }

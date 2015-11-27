@@ -186,18 +186,18 @@ public class UserDAO extends DAO<UserBDD> {
                             ResultSet.TYPE_SCROLL_INSENSITIVE,
                             ResultSet.CONCUR_UPDATABLE
                     ).executeUpdate(
-                    "UPDATE usertwitter" +
-                            "   SET login='"+ obj.getLogin() +"', password='" + obj.getPassword() + "', name='" + obj.getName()
-                            + "', firstname='" + obj.getFirstName()
-                            + "', localisation='" + obj.getLocalisation() + "'" +
-                            " WHERE iduser = " + obj.getId() + ";"
+                    "UPDATE usertwitter SET login = '" + obj.getLogin() + "',"+
+                            " password = '" + obj.getPassword() + "'" +
+                            " name = '" + obj.getName() + "'" +
+                            " firstname = '" + obj.getFirstName() + "'" +
+                            " localisation = '" + obj.getLocalisation() + "'" +
+                            " WHERE iduser = " + obj.getId()
             );
-            obj = this.find(obj.getId());
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return obj;
+        return null;
     }
 
     @Override

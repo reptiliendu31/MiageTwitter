@@ -2,6 +2,7 @@ package bdd.objetBdd;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Created by Stéfan on 08/11/2015.
@@ -11,6 +12,8 @@ public class UserBDD implements Serializable {
     private ArrayList<MessageBDD> messages;
     private ArrayList<UserBDD> abonnements;
     private int id;
+
+    private static final long serialVersionUID = 6529685098267757690L;
 
     public UserBDD(String login, String password, String name, String firstName, String localisation) {
         this.login = login;
@@ -34,7 +37,6 @@ public class UserBDD implements Serializable {
                 ", password='" + password + '\'' +
                 ", name='" + name + '\'' +
                 ", firstName='" + firstName + '\'' +
-                ", localisation='" + localisation + '\'' +
                 '}';
 
         for (MessageBDD msg : messages) {
@@ -45,6 +47,24 @@ public class UserBDD implements Serializable {
         }
 
         return s;
+    }
+
+    public ArrayList<UserBDD> getAbonnements() {
+        return abonnements;
+    }
+
+    public void removeAbonnement(String login) {
+        Iterator<UserBDD> iter = abonnements.iterator();
+        while(iter.hasNext()) {
+            UserBDD user = iter.next();
+            if (user.getLogin() == login) {
+                abonnements.remove(user);
+            }
+        }
+    }
+
+    public ArrayList<MessageBDD> getMessages() {
+        return messages;
     }
 
     public int getId() {

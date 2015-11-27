@@ -1,16 +1,19 @@
 package bdd.objetBdd;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
 /**
  * Created by Stéfan on 09/11/2015.
  */
-public class MessageBDD {
+public class MessageBDD implements Serializable {
     private String content,localization;
     private int idMessage;
     private int user;
     private Timestamp date;
+
+    private static long serialVersionUID = 1113799434508676095L;
 
     public int getIdUser() { return user;};
 
