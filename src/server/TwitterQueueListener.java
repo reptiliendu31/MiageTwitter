@@ -43,11 +43,13 @@ public class TwitterQueueListener implements MessageListener {
                         System.out.println("   -> sending ack to user");
                         server.respInitTempQueue(message);
                         break;
+                    // twitterqueuelistener
                     case "Connection" :
                         serverId = mess.readInt();
                         String login = mess.readString();
                         String password = mess.readString();
-                        server.respConnection(serverId,login,password);
+                        String localisation = mess.readString();
+                        server.respConnection(serverId,login,password,localisation);
                         break;
                     case "SignIn" :
                         serverId = mess.readInt();

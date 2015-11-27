@@ -224,7 +224,7 @@ public class Server {
 
     // respConnection method
     // checks if user exists, and sends result to client
-    public void respConnection(int idClient, String login, String password){
+    public void respConnection(int idClient, String login, String password, String localisation){
         try {
             UserDAO usr = new UserDAO();
             UserBDD user = usr.findbyLogin(login);
@@ -232,10 +232,19 @@ public class Server {
             boolean isUser = (user != null);
             if(isUser){
                 if(user.getPassword().equals(password)){
-                     if(!isUserConnected(user)){
+                    if(!isUserConnected(user)){
                         connectUserToServer(user);
                         System.out.println("User connected");
-                     }else{
+                        System.out.println("localisation = " + localisation);
+                        // update localisation
+                        if(!localisation.equals("null")){
+                            System.out.println("test if");
+                            user.setLocalisation(localisation);
+                            user = usr.update(user);
+                            isUser = (user != null);
+                            System.out.println("value isUser" + isUser);
+                        }
+                    }else{
                         isUser = false;
                         errorConnection = "User already connected";
                     }
@@ -261,7 +270,6 @@ public class Server {
                 rep.setJMSType("RespConnection");
                 mp.send(rep);
             }
-
         } catch (JMSException e) {
             e.printStackTrace();
         }

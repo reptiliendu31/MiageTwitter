@@ -244,12 +244,29 @@ public class User {
             System.out.println("Enter password:");
             waiter = new BufferedReader(new InputStreamReader(System.in));
             String pwd = waiter.readLine();
+            System.out.println("Do you want to change your localisation ? Y / N");
+            waiter = new BufferedReader(new InputStreamReader(System.in));
+            String respLoca = waiter.readLine();
+            String loca = "null";
+            switch (respLoca){
+                case "Y":
+                    System.out.println("Enter new Localisation:");
+                    waiter = new BufferedReader(new InputStreamReader(System.in));
+                    loca = waiter.readLine();
+                    break;
+                case "N":
+                    loca = "null";
+                    break;
+                default:break;
+            }
+            System.out.println("localisation entrée : " + loca);
             StreamMessage req = session.createStreamMessage();
             req.clearBody();
             // id server
             req.writeInt(serverID);
             req.writeString(login);
             req.writeString(pwd);
+            req.writeString(loca);
             req.setJMSType("Connection");
             senderTwitterQueue.send(req);
             System.out.println("Sent connection request");

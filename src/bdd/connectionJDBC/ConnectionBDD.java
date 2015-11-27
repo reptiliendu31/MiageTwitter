@@ -15,7 +15,7 @@ public class ConnectionBDD {
 
     private static String user = "postgres";
 
-    private static String passwd = "admin";
+    private static String passwd = "twitter";
 
     private static Connection connect;
 

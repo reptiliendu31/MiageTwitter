@@ -34,6 +34,7 @@ public class UserBDD implements Serializable {
                 ", password='" + password + '\'' +
                 ", name='" + name + '\'' +
                 ", firstName='" + firstName + '\'' +
+                ", localisation='" + localisation + '\'' +
                 '}';
 
         for (MessageBDD msg : messages) {
