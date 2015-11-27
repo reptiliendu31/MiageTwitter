@@ -7,6 +7,7 @@ import javax.naming.NamingException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -145,15 +146,20 @@ public class Server {
         }
     }
 
-    public void respSignIn(int idClient, String login, String password, String name, String firstName){
+    public void respSignIn(int idClient, String login, String password, String name, String firstName, String localisation) {
         UserDAO usr = new UserDAO();
-        UserBDD user = new UserBDD(login,password,name,firstName);
-        user = usr.create(user);
-        boolean isUser = (user != null);
-        if(isUser){
-            try {
-
-                System.out.println("user created");
+        try {
+            // check if user already exist
+            if (!usr.checkLogin(login)) {
+                UserBDD user = new UserBDD(login, password, name, firstName, localisation);
+                user = usr.create(user);
+                boolean isUser = (user != null);
+                // check if user created
+                if (isUser) {
+                    System.out.println("user created");
+                }else {
+                    System.out.println("user creation failed");
+                }
                 // getting temp queue destination
                 MessageProducer mp = tempQueues.get(idClient);
                 StreamMessage rep = session.createStreamMessage();
@@ -161,9 +167,18 @@ public class Server {
                 rep.writeBoolean(isUser);
                 rep.setJMSType("RespSignIn");
                 mp.send(rep);
-            }catch (JMSException e) {
-                e.printStackTrace();
+            }else{
+                System.out.println("user already exist");
+                // getting temp queue destination
+                MessageProducer mp = tempQueues.get(idClient);
+                StreamMessage rep = session.createStreamMessage();
+                rep.clearBody();
+                rep.writeBoolean(false);
+                rep.setJMSType("RespSignIn");
+                mp.send(rep);
             }
+        }catch (JMSException e) {
+            e.printStackTrace();
         }
         else{
             // envoi mess erreur
@@ -326,6 +341,39 @@ public class Server {
         }
     }
 
+    // respSearch method
+    // checks if  found users, and send list of user as result to client
+    public void respSearch(int idClient, String search){
+        try {
+            UserDAO usr = new UserDAO();
+            ArrayList<String> listLoginUser = usr.findSearch(search);
+            boolean isListUser = (listLoginUser.isEmpty());
+            if(!isListUser){
+                System.out.println("List not Empty and sent");
+                // send list of logins
+                // getting temp queue destination
+                MessageProducer mp = tempQueues.get(idClient);
+                ObjectMessage rep = session.createObjectMessage();
+                rep.clearBody();
+                rep.setObject(listLoginUser);
+                rep.setJMSType("RespSearch");
+                mp.send(rep);
+            }else{
+                System.out.println("List Empty");
+                // getting temp queue destination
+                MessageProducer mp = tempQueues.get(idClient);
+                StreamMessage rep = session.createStreamMessage();
+                rep.clearBody();
+                rep.writeBoolean(isListUser);
+                rep.setJMSType("RespSearch");
+                mp.send(rep);
+            }
+
+        } catch (JMSException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Traitement d'un tweet reçu dans la file, enregistrement en bdd + publication sur le topic
      * @param serverId
@@ -344,12 +392,11 @@ public class Server {
     }
 
     public boolean connectUserToServer(UserBDD u) {
-        return connectedUsers.put(u.getLogin(), true);
+        return connectedUsers.put(u.getLogin(),true);
     }
 
     public boolean disconnectUserFromServer(UserBDD u) {
         return connectedUsers.put(u.getLogin(),false);
     }
-
 
 }

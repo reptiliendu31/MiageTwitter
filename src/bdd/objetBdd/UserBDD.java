@@ -7,18 +7,19 @@ import java.util.ArrayList;
  * Created by Stéfan on 08/11/2015.
  */
 public class UserBDD implements Serializable {
-    private String login,password,name,firstName;
+    private String login,password,name,firstName,localisation;
     private ArrayList<MessageBDD> messages;
     private ArrayList<UserBDD> abonnements;
     private int id;
 
-    public UserBDD(String login, String password, String name, String firstName) {
+    public UserBDD(String login, String password, String name, String firstName, String localisation) {
         this.login = login;
         this.password = password;
         this.name = name;
         this.firstName = firstName;
         this.abonnements = new ArrayList<UserBDD>();
         this.messages = new ArrayList<MessageBDD>();
+        this.localisation = localisation;
     }
 
     public String getLogin() {
@@ -87,5 +88,13 @@ public class UserBDD implements Serializable {
 
     public boolean putSub(UserBDD s){
         return abonnements.add(s);
+    }
+
+    public String getLocalisation() {
+        return localisation;
+    }
+
+    public void setLocalisation(String localisation) {
+        this.localisation = localisation;
     }
 }
