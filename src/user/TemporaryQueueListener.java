@@ -7,6 +7,7 @@ package user;
 import bdd.objetBdd.UserBDD;
 
 import javax.jms.*;
+import java.util.ArrayList;
 
 /**
  * Created by david on 06/11/2015.
@@ -49,6 +50,10 @@ public class TemporaryQueueListener implements MessageListener {
                         result = mess.readBoolean();
                         user.respMsgTempQueueUnFollow(result);
                         break;
+                    case "RespSearch" :
+                        result = mess.readBoolean();
+                        user.respMsgTempQueueSearch(result);
+                        break;
                     default: break;
                 }
 
@@ -62,6 +67,10 @@ public class TemporaryQueueListener implements MessageListener {
                     case "RespConnection" :
                         UserBDD usr = (UserBDD)mess.getObject();
                         user.respMsgTempQueueConnection(usr);
+                        break;
+                    case "RespSearch" :
+                        ArrayList<String> list = (ArrayList<String>)mess.getObject();
+                        user.respMsgTempQueueSearch(list);
                         break;
                     default: break;
                 }

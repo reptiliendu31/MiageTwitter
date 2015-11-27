@@ -47,7 +47,8 @@ public class UserDAO extends DAO<UserBDD> {
                         result.getString("login"),
                         result.getString("password"),
                         result.getString("name"),
-                        result.getString("firstName")
+                        result.getString("firstName"),
+                        result.getString("localisation")
                 );
                 userBDD.setId(result.getInt("iduser"));
 
@@ -109,19 +110,62 @@ public class UserDAO extends DAO<UserBDD> {
         return userBDD;
     }
 
+    public ArrayList<String> findSearch(String search) {
+        ArrayList<String> res = new ArrayList<>();
+        try {
+            ResultSet result = this .connect
+                    .createStatement(
+                            ResultSet.TYPE_SCROLL_INSENSITIVE,
+                            ResultSet.CONCUR_UPDATABLE
+                    ).executeQuery(
+                            "SELECT * FROM UserTwitter WHERE login like '%"+ search+"%'" +
+                                    "OR name like '%"+ search+"%'" +
+                                    "OR firstname like '%"+ search+"%'" +
+                                    "OR localisation like '%"+ search+"%'"
+                    );
+            while(result.next()){
+                res.add(result.getString("login"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return res;
+    }
+
+    public boolean checkLogin(String log) {
+        UserBDD userBDD = null;
+        boolean res= false;
+        try {
+            ResultSet result = this .connect
+                    .createStatement(
+                            ResultSet.TYPE_SCROLL_INSENSITIVE,
+                            ResultSet.CONCUR_UPDATABLE
+                    ).executeQuery(
+                            "SELECT * FROM UserTwitter WHERE login = '" + log +"'"
+                    );
+            if(result.first()) {
+                res = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return res;
+    }
+
     @Override
     public UserBDD create(UserBDD obj) {
         try {
             // insertion de l'objet
             PreparedStatement prepare =
                     this.connect.prepareStatement(
-                            "INSERT INTO UserTwitter (password, name, firstName, login) VALUES (?, ?, ?, ?)",
+                            "INSERT INTO UserTwitter (password, name, firstName, login, localisation) VALUES (?, ?, ?, ?, ?)",
                             Statement.RETURN_GENERATED_KEYS
                     );
             prepare.setString(1, obj.getPassword());
             prepare.setString(2, obj.getName());
             prepare.setString(3, obj.getFirstName());
             prepare.setString(4, obj.getLogin());
+            prepare.setString(5, obj.getLocalisation());
             prepare.executeUpdate();
             // récupération des valeurs de l'insert
             ResultSet rs = prepare.getGeneratedKeys();
@@ -146,6 +190,7 @@ public class UserDAO extends DAO<UserBDD> {
                             " password = '" + obj.getPassword() + "'" +
                             " name = '" + obj.getName() + "'" +
                             " firstname = '" + obj.getFirstName() + "'" +
+                            " localisation = '" + obj.getLocalisation() + "'" +
                             " WHERE iduser = " + obj.getId()
             );
         } catch (SQLException e) {

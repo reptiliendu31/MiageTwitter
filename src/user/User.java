@@ -12,6 +12,8 @@ import javax.naming.NamingException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 
 /**
  * Created by david on 06/11/2015.
@@ -131,7 +133,7 @@ public class User {
                         //signIn();
                         break;
                     case "2":
-                        //sendMsgConnection();
+                        sendMsgSearch();
                         break;
                     case "3":
                         sendMsgFollow();
@@ -182,7 +184,10 @@ public class User {
             System.out.println("Choose first name:");
             waiter = new BufferedReader(new InputStreamReader(System.in));
             String firstName = waiter.readLine();
-            sendMsgSignIn(login, pswd, name, firstName);
+            System.out.println("Choose localisation:");
+            waiter = new BufferedReader(new InputStreamReader(System.in));
+            String localisation = waiter.readLine();
+            sendMsgSignIn(login, pswd, name, firstName, localisation);
             System.out.println("Sign in sent");
         }
         catch (IOException e) {
@@ -195,7 +200,7 @@ public class User {
         System.out.println("Sign Out sent");
     }
 
-    public void sendMsgSignIn(String login, String pswd, String name, String fName) {
+    public void sendMsgSignIn(String login, String pswd, String name, String fName, String localisation) {
         try {
             // create message
             StreamMessage req = session.createStreamMessage();
@@ -206,6 +211,7 @@ public class User {
             req.writeString(pswd);
             req.writeString(name);
             req.writeString(fName);
+            req.writeString(localisation);
             req.setJMSType("SignIn");
             senderTwitterQueue.send(req);
             System.out.println("Sent respSignIn");
@@ -248,6 +254,29 @@ public class User {
             req.setJMSType("Connection");
             senderTwitterQueue.send(req);
             System.out.println("Sent connection request");
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        catch (JMSException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // send research demand
+    public void sendMsgSearch(){
+        try {
+            System.out.println("Who are you searching ?");
+            waiter = new BufferedReader(new InputStreamReader(System.in));
+            String search = waiter.readLine();
+            StreamMessage req = session.createStreamMessage();
+            req.clearBody();
+            // id server
+            req.writeInt(serverID);
+            req.writeString(search);
+            req.setJMSType("Search");
+            senderTwitterQueue.send(req);
+            System.out.println("Sent Search request");
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -333,7 +362,6 @@ public class User {
     public void respMsgTempQueueSignIn(boolean res) {
         if(res){
             System.out.println("Sign In successful");
-            sendMsgSignOut(userCourant.getLogin());
         }else{
             System.out.println("Sign In Failed");
         }
@@ -365,6 +393,10 @@ public class User {
         }
     }
 
+    public void respMsgTempQueueSearch(boolean res) {
+        System.out.println("No users found");
+    }
+
     // réception
     // response from temp queue init for connection
     public void respMsgTempQueueConnection(String error) {
@@ -373,12 +405,19 @@ public class User {
     // réception
     // response from temp queue init for connection
     public void respMsgTempQueueConnection(UserBDD usr) {
-            connected = true;
-            setUserCourant(usr);
-            System.out.println("Connexion successful");
+        connected = true;
+        setUserCourant(usr);
+        System.out.println("Connexion successful");
     }
 
-
+    // réception
+    // response from temp queue init for connection
+    public void respMsgTempQueueSearch(ArrayList<String> list) {
+        System.out.println("List of results");
+        for(String log : list){
+            System.out.println("User login : " + log);
+        }
+    }
 
     public void setUserCourant(UserBDD user){
         userCourant = user;
