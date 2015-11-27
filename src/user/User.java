@@ -12,6 +12,7 @@ import javax.naming.NamingException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 /**
  * Created by david on 06/11/2015.
@@ -128,7 +129,7 @@ public class User {
                 String choix = waiter.readLine();
                 switch (choix) {
                     case "1":
-                        //signIn();
+                        sendTweet();
                         break;
                     case "2":
                         sendMsgSearch();

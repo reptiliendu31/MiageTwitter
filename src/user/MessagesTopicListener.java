@@ -24,7 +24,23 @@ public class MessagesTopicListener implements MessageListener {
             } catch (JMSException exception) {
                 System.err.println("Failed to get message text: " + exception);
             }
+        }else if (message instanceof StreamMessage){
+            StreamMessage mess = (StreamMessage) message;
+
+            try {
+                switch (message.getJMSType()) {
+                    case "Tweet" :
+                        String u = mess.readString();
+                        String m = mess.readString();
+                        System.out.println(u+" : "+m);
+                        break;
+                    default: break;
+                }
+            } catch (JMSException e) {
+                e.printStackTrace();
+            }
         }
     }
+
 }
 

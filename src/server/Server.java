@@ -15,6 +15,7 @@ import javax.jms.*;
 
 import bdd.objetBdd.MessageBDD;
 import bdd.objetBdd.UserBDD;
+import bdd.objetDao.MessageDAO;
 import bdd.objetDao.UserDAO;
 
 /**
@@ -180,9 +181,7 @@ public class Server {
         }catch (JMSException e) {
             e.printStackTrace();
         }
-        else{
-            // envoi mess erreur
-        }
+
     }
 
     public void respSignOut(int idClient, String login){
@@ -382,8 +381,28 @@ public class Server {
      */
     public void respTweet(int serverId, String usercourant, String tweet,long time) {
         UserDAO u = new UserDAO();
+        Timestamp t = new Timestamp(time);
         UserBDD user = u.findbyLogin(usercourant);
-        MessageBDD m = new MessageBDD(tweet,user.getId(),time,user.getlo);
+        MessageBDD m = new MessageBDD(tweet,user.getId(),t,user.getLocalisation());
+
+        MessageDAO mess = new MessageDAO();
+        //adding tweet in db
+        mess.create(m);
+
+        //sending to topic
+
+        try {
+            StreamMessage req = session.createStreamMessage();
+            req.clearBody();
+            req.writeString(usercourant);
+            req.writeString(m.getContent());
+            req.setJMSType("Tweet");
+            sender.send(req);
+        } catch (JMSException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     // renvoie si le user est connecté au serveur
