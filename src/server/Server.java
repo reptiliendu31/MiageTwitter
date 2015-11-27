@@ -388,7 +388,7 @@ public class Server {
         MessageDAO mess = new MessageDAO();
         //adding tweet in db
         mess.create(m);
-
+        System.out.println("received tweet");
         //sending to topic
 
         try {
@@ -402,6 +402,7 @@ public class Server {
             e.printStackTrace();
         }
 
+        System.out.println("tweet sent to users");
 
     }
 
