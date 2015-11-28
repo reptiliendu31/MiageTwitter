@@ -55,6 +55,9 @@ public class TemporaryQueueListener implements MessageListener {
                     case "RespSearch" :
                         result = mess.readBoolean();
                         user.respMsgTempQueueSearch(result);
+                    case "RespTweet" :
+                        result = mess.readBoolean();
+                        user.respMsgTempQueueTweet(result);
                         break;
                     default: break;
                 }

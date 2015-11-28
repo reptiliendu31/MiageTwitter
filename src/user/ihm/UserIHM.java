@@ -123,23 +123,29 @@ public class UserIHM extends JFrame {
 		JPanel p;
 		switch (e) {
 		case Menu:
+			setSize(470, 288);
 			p = panelMenu;
 			panelSubscribe.remiseAZero();
 			panelLogin.remiseAZero();
 			break;
 		case Login:
+			setSize(470, 288);
 			p = panelLogin;
 			break;
 		case Subscribe:
+			setSize(470, 288);
 			p = panelSubscribe;
 			break;		
 		case Dashboard:
 			p = panelUser;
+			setSize(450,580);
 			break;
 		case Abonnes:
+			setSize(470, 288);
 			p = panelAbo;
 			break;
 		case Messages:
+			setSize(470, 288);
 			p = panelMsg;
 			break;
 		default:
