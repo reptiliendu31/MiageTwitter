@@ -23,8 +23,6 @@ public class TemporaryQueueListener implements MessageListener {
     public void onMessage(Message message) {
         boolean result;
         if (message instanceof StreamMessage) {
-            System.out.println("Sign In successful");
-
             StreamMessage mess = (StreamMessage) message;
             try {
                 switch (message.getJMSType()) {
@@ -55,6 +53,7 @@ public class TemporaryQueueListener implements MessageListener {
                     case "RespSearch" :
                         result = mess.readBoolean();
                         user.respMsgTempQueueSearch(result);
+                        break;
                     case "RespTweet" :
                         result = mess.readBoolean();
                         user.respMsgTempQueueTweet(result);

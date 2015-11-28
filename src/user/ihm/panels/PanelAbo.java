@@ -174,6 +174,7 @@ public class PanelAbo extends JPanel {
 	}		
 	
 	public void rechargerTableau(ArrayList<UserBDD> nouveauxAbos) {
+		lAbonnes = nouveauxAbos;
 		donneesTable.majTable(nouveauxAbos);
 		revalidate();
 	}
