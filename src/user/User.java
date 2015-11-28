@@ -40,6 +40,8 @@ public class User {
     private boolean connected = false;
     private UserIHM ihm;
 
+
+
     public static void main(String[] args) {
         User u = new User();
         System.out.println("User launched !");
@@ -60,6 +62,7 @@ public class User {
             serverID = 0;
             // create the JNDI initial context.
             context = new InitialContext();
+
 
             // look up the ConnectionFactory
             factory = (ConnectionFactory) context.lookup(factoryName);
@@ -275,6 +278,28 @@ public class User {
         }
     }
 
+
+    public void setFilter(String filterf){
+        try {
+            session.close();
+
+
+            // create the session
+            session = connection.createSession(
+                    false, Session.AUTO_ACKNOWLEDGE);
+
+            receiverMessagesTopic = session.createConsumer(destMessages, "(follow in (" + filterf + ")) OR (ville = 'tls')");
+            System.out.println("(follow in (" + filterf + ")) OR (ville = 'tls')");
+
+            receiverMessagesTopic.setMessageListener(new MessagesTopicListener(this));
+
+            connection.start();
+
+        } catch (JMSException e) {
+            e.printStackTrace();
+        }
+    }
+
     // première connexion au serveur : demande de file temp pour communiquer
 
     public void sendMsgCreateTempQueue() {
@@ -302,8 +327,9 @@ public class User {
             req.writeString(tweet);
             req.writeLong(System.currentTimeMillis());
             req.setJMSType("Tweet");
-            System.out.println("Sent Tweet");
+            req.setStringProperty("follow", userCourant.getLogin());
             senderTwitterQueue.send(req);
+            System.out.println("Sent Tweet");
             userCourant.putMessage(new MessageBDD(tweet, userCourant.getId(), new Timestamp(System.currentTimeMillis()), userCourant.getLocalisation()));
         } catch (JMSException e) {
             e.printStackTrace();
@@ -377,6 +403,7 @@ public class User {
         setUserCourant(usr);
         System.out.println("Connexion successful");
         ihm.callbackConnexionSuccessful();
+        setFilter(usr.getFilterFollow());
     }
 
     // réception
