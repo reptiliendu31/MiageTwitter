@@ -48,8 +48,8 @@ public class User {
         System.out.println("Press enter to end process...");
         BufferedReader waiter = new BufferedReader(new InputStreamReader(System.in));
         try {
-            waiter.readLine();
-        } catch (IOException e) {
+            //waiter.readLine();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -95,29 +95,11 @@ public class User {
 
             //System.out.println("Waiting for messages...");
             waiter = new BufferedReader(new InputStreamReader(System.in));
-            waiter.readLine();
+            //waiter.readLine();
 
 
         } catch (Exception exception) {
             exception.printStackTrace();
-        } finally {
-            // close the context
-            if (context != null) {
-                try {
-                    context.close();
-                } catch (NamingException exception) {
-                    exception.printStackTrace();
-                }
-            }
-
-            // close the respConnection
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (JMSException exception) {
-                    exception.printStackTrace();
-                }
-            }
         }
     }
 
@@ -480,21 +462,18 @@ public class User {
         }
     }
 
-    public void respTweet(MessageBDD m){
+    public void respTweet(int idmsg, String content, int iduser, long date, String localization, String login,String name, String fname){
 
+        MessageBDD m=new MessageBDD(content,iduser,new Timestamp(date),localization);
         Object[] tab= new Object[2];
         tab[0]=m;
+        UserBDD u = new UserBDD(login,null,name,fname,null);
 
-        for(UserBDD u : userCourant.getAbonnements()){
-            if(u.getId() == m.getIdUser()){
-                 tab[1]=u;
-            }
-        }
+        tab[1]=u;
         if(follow){
             ihm.majFlux(tab);
         }
-        if(ville){
-            System.out.println("haha");
+        if(ville && localization.equals(userCourant.getLocalisation())){
              ihm.majLoc(tab);
         }
     }

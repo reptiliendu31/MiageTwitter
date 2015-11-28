@@ -138,6 +138,7 @@ public class Server {
             rep.writeInt(nbTempQueues);
             rep.setJMSType("RespInitTempQueue");
             mp.send(rep);
+            nbTempQueues++;
         } catch (JMSException e) {
             e.printStackTrace();
         }
@@ -414,11 +415,22 @@ public class Server {
 
         try {
             // to topic
-            ObjectMessage req = session.createObjectMessage();
+            StreamMessage req = session.createStreamMessage();
             req.clearBody();
-            req.setObject(m);
+            req.writeInt(m.getIdMessage());
+            req.writeString(m.getContent());
+            req.writeInt(m.getIdUser());
+            req.writeLong(m.getDate().getTime());
+            req.writeString(m.getLocalization());
+
+
+
+            req.writeString(user.getLogin());
+            req.writeString(user.getName());
+            req.writeString(user.getFirstName());
+
             req.setJMSType("Tweet");
-            req.setStringProperty("follow",usercourant);
+            req.setStringProperty("follow", usercourant);
             req.setStringProperty("ville",user.getLocalisation());
             sender.send(req);
 
