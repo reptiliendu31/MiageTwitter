@@ -77,6 +77,9 @@ public class UserIHM extends JFrame {
 		user.sendTweet(text);
 	}
 
+	public void actionSendLoc(String loc) {
+		user.sendMsgLoc(loc);
+	}
 
 	public void callbackConnexionSuccessful() {
 		userCourant = user.getUserCourant();
@@ -114,6 +117,17 @@ public class UserIHM extends JFrame {
 		PopupErreur p = new PopupErreur("Inscription","Inscription réussie, vous pouvez maintenant vous connecter.");
 		this.changerPanel(Etat.Menu);
 	}
+
+	public void callbackLocSuccessfull(String locTemp) {
+		PopupErreur p = new PopupErreur("Localisation","Localisation changée à " + locTemp);
+	}
+
+	public void callbackLocFailed() {
+		panelUser.razLoc();
+		PopupErreur p = new PopupErreur("Localisation","Erreur : localisation inchangée.");
+	}
+
+
 
 	public void majTweetsUser() {
 		panelMsg.rechargerTableau(userCourant.getMessages());
@@ -167,4 +181,5 @@ public class UserIHM extends JFrame {
 	public void actionDisconnect() {
 		user.signOut();
 	}
+
 }

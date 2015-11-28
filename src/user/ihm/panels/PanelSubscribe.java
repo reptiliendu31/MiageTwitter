@@ -2,16 +2,14 @@ package user.ihm.panels;
 
 import user.ihm.UserIHM;
 import user.ihm.enums.Etat;
+import user.ihm.enums.Lieu;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.text.JTextComponent;
-import javax.swing.JTextField;
 
 import java.awt.Color;
 
@@ -23,7 +21,7 @@ public class PanelSubscribe extends JPanel {
 	protected UserIHM modele;
 	private JTextField textFieldNom;
 	private JTextField textFieldPrenom;
-	private JTextField textFieldLoc;
+	private JComboBox comboBoxLoc;
 
 	/**
 	 * Create the panel.
@@ -87,11 +85,10 @@ public class PanelSubscribe extends JPanel {
 		JLabel label = new JLabel("Localisation :");
 		label.setBounds(30, 169, 131, 14);
 		add(label);
-		
-		textFieldLoc = new JTextField();
-		textFieldLoc.setColumns(10);
-		textFieldLoc.setBounds(194, 166, 235, 20);
-		add(textFieldLoc);
+
+		comboBoxLoc = new JComboBox(Lieu.values());
+		comboBoxLoc.setBounds(194, 169, 235, 20);
+		add(comboBoxLoc);
 		
 		btnRetour.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -101,7 +98,7 @@ public class PanelSubscribe extends JPanel {
 
 		btnValider.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				modele.actionInscription(textFieldId.getText(),textFieldMdp.getText(),textFieldNom.getText(),textFieldPrenom.getText(),textFieldLoc.getText());
+				modele.actionInscription(textFieldId.getText(),textFieldMdp.getText(),textFieldNom.getText(),textFieldPrenom.getText(),((Lieu)comboBoxLoc.getSelectedItem()).toString());
 			}
 		});	
 	}

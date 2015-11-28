@@ -367,6 +367,35 @@ public class Server {
     }
 
     /**
+     * Traitement d'un changement de localisation chez un user
+     * @param idClient
+     * @param loc
+     */
+    public void respLoc(int idClient, String loginUser, String loc) {
+        UserDAO u = new UserDAO();
+        UserBDD user = u.findbyLogin(loginUser);
+        user.setLocalisation(loc);
+        user = u.update(user);
+        System.out.println(("Received loc request : " + idClient + " > " + loc));
+
+        try {
+            // ack for user
+            MessageProducer mp = tempQueues.get(idClient);
+            StreamMessage rep = session.createStreamMessage();
+            rep.clearBody();
+            rep.writeBoolean((u != null));
+            System.out.println("Sent " + (u != null));
+            rep.setJMSType("RespLocalisation");
+            mp.send(rep);
+
+        } catch (JMSException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    /**
      * Traitement d'un tweet reçu dans la file, enregistrement en bdd + publication sur le topic + envoi vers user (ack)
      * @param idClient
      * @param usercourant

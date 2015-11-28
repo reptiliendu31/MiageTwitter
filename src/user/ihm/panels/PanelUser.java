@@ -6,28 +6,21 @@ import java.awt.BorderLayout;
 import java.awt.Font;
 import java.util.ArrayList;
 
-import javax.swing.GroupLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.table.AbstractTableModel;
 
 import bdd.objetBdd.UserBDD;
 import user.ihm.UserIHM;
 import user.ihm.enums.Etat;
-
-import javax.swing.JButton;
+import user.ihm.enums.Lieu;
+import user.ihm.popup.PopupErreur;
 
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.JTextField;
 
 public class PanelUser extends JPanel {
 	private JPanel courant = this;
@@ -43,6 +36,7 @@ public class PanelUser extends JPanel {
 	private JButton btnGrerMesMessages;
 	private JLabel lblLocalisation;
 	private JTextField textFieldLoc;
+	private JComboBox comboBoxLieu;
 	private JButton btnDconnexion;
 	private UserBDD user;
 
@@ -69,28 +63,34 @@ public class PanelUser extends JPanel {
 
 		lblLocalisation = new JLabel("Localisation :");
 
-		textFieldLoc = new JTextField(user.getLocalisation());
-		textFieldLoc.setColumns(10);
-
 		JButton btnChanger = new JButton("Changer");
+		btnChanger.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String loc = ((Lieu)comboBoxLieu.getSelectedItem()).toString();
+				ihm.actionSendLoc(loc);
+			}
+		});
+		comboBoxLieu = new JComboBox(Lieu.values());
+		comboBoxLieu.setSelectedItem(Lieu.valueOf(user.getLocalisation()));
 		GroupLayout gl_panelBox = new GroupLayout(panelBox);
 		gl_panelBox.setHorizontalGroup(
 				gl_panelBox.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_panelBox.createSequentialGroup()
 								.addContainerGap()
-								.addGroup(gl_panelBox.createParallelGroup(Alignment.LEADING, false)
-										.addComponent(lblMurMessages)
+								.addGroup(gl_panelBox.createParallelGroup(Alignment.LEADING)
 										.addGroup(gl_panelBox.createSequentialGroup()
 												.addComponent(lblIdentifiant)
 												.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-												.addComponent(lblCodeSecret)))
-								.addPreferredGap(ComponentPlacement.RELATED, 126, Short.MAX_VALUE)
-								.addComponent(lblLocalisation)
-								.addPreferredGap(ComponentPlacement.UNRELATED)
-								.addComponent(textFieldLoc, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addComponent(btnChanger)
-								.addContainerGap())
+												.addComponent(lblCodeSecret)
+												.addGap(409))
+										.addGroup(gl_panelBox.createSequentialGroup()
+												.addComponent(lblLocalisation)
+												.addPreferredGap(ComponentPlacement.UNRELATED)
+												.addComponent(comboBoxLieu, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE)
+												.addPreferredGap(ComponentPlacement.RELATED)
+												.addComponent(btnChanger)
+												.addContainerGap(169, Short.MAX_VALUE))))
 		);
 		gl_panelBox.setVerticalGroup(
 				gl_panelBox.createParallelGroup(Alignment.TRAILING)
@@ -101,12 +101,13 @@ public class PanelUser extends JPanel {
 										.addComponent(lblCodeSecret))
 								.addPreferredGap(ComponentPlacement.RELATED)
 								.addGroup(gl_panelBox.createParallelGroup(Alignment.BASELINE)
-										.addComponent(lblMurMessages)
 										.addComponent(lblLocalisation)
-										.addComponent(textFieldLoc, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-										.addComponent(btnChanger))
+										.addComponent(btnChanger)
+										.addComponent(comboBoxLieu, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 								.addContainerGap())
 		);
+		panelBox.setLayout(gl_panelBox);
+
 		panelBox.setLayout(gl_panelBox);
 
 
@@ -146,14 +147,14 @@ public class PanelUser extends JPanel {
 
 		tableauFlux.setToolTipText("");
 		ListSelectionModel listSelectionModel = tableauFlux.getSelectionModel();
-		JScrollPane scrollPane = new JScrollPane(tableauFlux);
 
 
 		JTable tableauLoc = new JTable(donneesTableLoc);
 		tableauLoc.setAutoCreateRowSorter(true);
 
 		tableauLoc.setToolTipText("");
-		JScrollPane scrollPane2 = new JScrollPane(tableauLoc);
+		JScrollPane scrollPane2 = new JScrollPane(tableauFlux);
+		JScrollPane scrollPane = new JScrollPane(tableauLoc);
 
 		JLabel lblMessagesDesAbonns = new JLabel("Messages des abonn\u00E9s :");
 
@@ -252,6 +253,11 @@ public class PanelUser extends JPanel {
 		donneesTableLoc.addToTable(msg);
 		revalidate();
 	}
+
+	public void razLoc() {
+		textFieldLoc.setText("");
+	}
+
 
 }
 
