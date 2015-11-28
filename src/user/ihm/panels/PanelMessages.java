@@ -157,6 +157,7 @@ public class PanelMessages extends JPanel {
 	}
 	
 	public void rechargerTableau(ArrayList<MessageBDD> msgs) {
+		System.out.println("tweet");
 		donneesTable.majTable(msgs);
 		revalidate();
 	}

@@ -22,17 +22,17 @@ import bdd.objetDao.UserDAO;
  * Created by david on 06/11/2015.
  */
 public class Server {
-    private Context context = null;
-    private ConnectionFactory factory = null;
-    private Connection connection = null;
+    private Context context ;
+    private ConnectionFactory factory;
+    private Connection connection;
     private String factoryName = "ConnectionFactory";
     private String topicMessages = "Messages";
     private String twitterQueue = "twitter";
-    private Destination destMessages = null;
-    private Destination destTwitter = null;
+    private Destination destMessages;
+    private Destination destTwitter;
     private Session session ;
-    private MessageProducer sender = null;
-    private MessageConsumer receiver = null;
+    private MessageProducer sender;
+    private MessageConsumer receiver;
     private HashMap<Integer, MessageProducer> tempQueues;
     private static int nbTempQueues = 1;
     private HashMap<String, Boolean> connectedUsers;

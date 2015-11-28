@@ -17,7 +17,6 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.table.AbstractTableModel;
 
 import bdd.objetBdd.UserBDD;
-import user.User;
 import user.ihm.UserIHM;
 import user.ihm.enums.Etat;
 
@@ -26,22 +25,20 @@ import javax.swing.JButton;
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.util.HashMap;
 
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JTextField;
-import javax.swing.BoxLayout;
 
 public class PanelUser extends JPanel {
 	private JPanel courant = this;
 	private JPanel panelBox, panelCenter; 
 	private BorderLayout layout ;
-	private JTable tableauStations ;
+	private JTable tableauFlux;
 	private ArrayList<MessageBDD> messagesFlux;
 	private JLabel lblMurMessages ;
 	private JPanel panelNorth;
 	private UserIHM ihm;
-	private TableFlux donneesTable;
+	private TableFlux donneesTableFlux, donneesTableLoc;
 	private final JButton btnChercher = new JButton("G�rer abonn�s");
 	private JButton btnGrerMesMessages;
 	private JLabel lblLocalisation;
@@ -60,59 +57,59 @@ public class PanelUser extends JPanel {
 		
 		// Cr�ation du layout
 		this.setLayout(layout);
-				
+
 		this.add(panelBox,BorderLayout.NORTH);
 		lblMurMessages = new JLabel("Mon mur :\r\n");
 		lblMurMessages.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblMurMessages.setHorizontalAlignment(SwingConstants.LEFT);
-		
+
 		JLabel lblIdentifiant = new JLabel("Identifiant : " + user.getLogin() );
-		
+
 		JLabel lblCodeSecret = new JLabel("Nom : " + user.getFirstName() + " " + user.getName());
-		
+
 		lblLocalisation = new JLabel("Localisation :");
-		
+
 		textFieldLoc = new JTextField(user.getLocalisation());
 		textFieldLoc.setColumns(10);
-		
+
 		JButton btnChanger = new JButton("Changer");
 		GroupLayout gl_panelBox = new GroupLayout(panelBox);
 		gl_panelBox.setHorizontalGroup(
-			gl_panelBox.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panelBox.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_panelBox.createParallelGroup(Alignment.LEADING, false)
-						.addComponent(lblMurMessages)
+				gl_panelBox.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_panelBox.createSequentialGroup()
-							.addComponent(lblIdentifiant)
-							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addComponent(lblCodeSecret)))
-					.addPreferredGap(ComponentPlacement.RELATED, 126, Short.MAX_VALUE)
-					.addComponent(lblLocalisation)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(textFieldLoc, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnChanger)
-					.addContainerGap())
+								.addContainerGap()
+								.addGroup(gl_panelBox.createParallelGroup(Alignment.LEADING, false)
+										.addComponent(lblMurMessages)
+										.addGroup(gl_panelBox.createSequentialGroup()
+												.addComponent(lblIdentifiant)
+												.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+												.addComponent(lblCodeSecret)))
+								.addPreferredGap(ComponentPlacement.RELATED, 126, Short.MAX_VALUE)
+								.addComponent(lblLocalisation)
+								.addPreferredGap(ComponentPlacement.UNRELATED)
+								.addComponent(textFieldLoc, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(btnChanger)
+								.addContainerGap())
 		);
 		gl_panelBox.setVerticalGroup(
-			gl_panelBox.createParallelGroup(Alignment.TRAILING)
-				.addGroup(gl_panelBox.createSequentialGroup()
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-					.addGroup(gl_panelBox.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblIdentifiant)
-						.addComponent(lblCodeSecret))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_panelBox.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblMurMessages)
-						.addComponent(lblLocalisation)
-						.addComponent(textFieldLoc, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnChanger))
-					.addContainerGap())
+				gl_panelBox.createParallelGroup(Alignment.TRAILING)
+						.addGroup(gl_panelBox.createSequentialGroup()
+								.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addGroup(gl_panelBox.createParallelGroup(Alignment.BASELINE)
+										.addComponent(lblIdentifiant)
+										.addComponent(lblCodeSecret))
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addGroup(gl_panelBox.createParallelGroup(Alignment.BASELINE)
+										.addComponent(lblMurMessages)
+										.addComponent(lblLocalisation)
+										.addComponent(textFieldLoc, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addComponent(btnChanger))
+								.addContainerGap())
 		);
 		panelBox.setLayout(gl_panelBox);
-				
-		
+
+
 		panelNorth = new JPanel();
 		add(panelNorth, BorderLayout.SOUTH);
 		panelNorth.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
@@ -122,7 +119,7 @@ public class PanelUser extends JPanel {
 			}
 		});
 		panelNorth.add(btnChercher);
-		
+
 		btnGrerMesMessages = new JButton("G\u00E9rer mes messages");
 		btnGrerMesMessages.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -130,7 +127,7 @@ public class PanelUser extends JPanel {
 			}
 		});
 		panelNorth.add(btnGrerMesMessages);
-		
+
 		btnDconnexion = new JButton("D\u00E9connexion");
 		btnDconnexion.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -140,25 +137,55 @@ public class PanelUser extends JPanel {
 		panelNorth.add(btnDconnexion);
 		
 		/* cr?ation du tableau  */
-		donneesTable = new TableFlux(fl);
-		
+		donneesTableFlux = new TableFlux(fl);
+		donneesTableLoc = new TableFlux(new ArrayList<Object[]>());
+
 		add(panelCenter, BorderLayout.CENTER);
-		panelCenter.setLayout(new BoxLayout(panelCenter, BoxLayout.X_AXIS));
-		tableauStations = new JTable(donneesTable);
-		tableauStations.setAutoCreateRowSorter(true);
-		
-		tableauStations.setToolTipText("");
-		ListSelectionModel listSelectionModel = tableauStations.getSelectionModel();
-		JScrollPane scrollPane = new JScrollPane(tableauStations);
-		panelCenter.add(scrollPane);
-		
-		
-		JTable tableauStations2 = new JTable(donneesTable);
-		tableauStations2.setAutoCreateRowSorter(true);
-		
-		tableauStations2.setToolTipText("");
-		JScrollPane scrollPane2 = new JScrollPane(tableauStations);
-		panelCenter.add(scrollPane2);
+		tableauFlux = new JTable(donneesTableFlux);
+		tableauFlux.setAutoCreateRowSorter(true);
+
+		tableauFlux.setToolTipText("");
+		ListSelectionModel listSelectionModel = tableauFlux.getSelectionModel();
+		JScrollPane scrollPane = new JScrollPane(tableauFlux);
+
+
+		JTable tableauLoc = new JTable(donneesTableLoc);
+		tableauLoc.setAutoCreateRowSorter(true);
+
+		tableauLoc.setToolTipText("");
+		JScrollPane scrollPane2 = new JScrollPane(tableauLoc);
+
+		JLabel lblMessagesDesAbonns = new JLabel("Messages des abonn\u00E9s :");
+
+		JLabel lblMessagesDeLocalisation = new JLabel("Messages de localisation :");
+
+		GroupLayout gl_panelCenter = new GroupLayout(panelCenter);
+		gl_panelCenter.setHorizontalGroup(
+				gl_panelCenter.createParallelGroup(Alignment.LEADING)
+						.addComponent(scrollPane, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
+						.addComponent(scrollPane2, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
+						.addGroup(gl_panelCenter.createSequentialGroup()
+								.addContainerGap()
+								.addComponent(lblMessagesDesAbonns)
+								.addContainerGap(394, Short.MAX_VALUE))
+						.addGroup(gl_panelCenter.createSequentialGroup()
+								.addContainerGap()
+								.addComponent(lblMessagesDeLocalisation)
+								.addContainerGap(394, Short.MAX_VALUE))
+		);
+		gl_panelCenter.setVerticalGroup(
+				gl_panelCenter.createParallelGroup(Alignment.TRAILING)
+						.addGroup(gl_panelCenter.createSequentialGroup()
+								.addGap(10)
+								.addComponent(lblMessagesDesAbonns)
+								.addPreferredGap(ComponentPlacement.UNRELATED)
+								.addComponent(scrollPane2, GroupLayout.PREFERRED_SIZE, 234, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(ComponentPlacement.UNRELATED)
+								.addComponent(lblMessagesDeLocalisation)
+								.addPreferredGap(ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+								.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 187, GroupLayout.PREFERRED_SIZE))
+		);
+		panelCenter.setLayout(gl_panelCenter);
 
 		//listSelectionModel.addListSelectionListener(new ControleurTable());
 	}
@@ -216,8 +243,13 @@ public class PanelUser extends JPanel {
 		}
 	}
 
-	public void addMessageToTable(Object[] msg) {
-		donneesTable.addToTable(msg);
+	public void addMessageToTableFlux(Object[] msg) {
+		donneesTableFlux.addToTable(msg);
+		revalidate();
+	}
+
+	public void addMessageToTableLoc(Object[] msg) {
+		donneesTableLoc.addToTable(msg);
 		revalidate();
 	}
 
