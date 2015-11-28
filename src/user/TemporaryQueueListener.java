@@ -59,6 +59,10 @@ public class TemporaryQueueListener implements MessageListener {
                         result = mess.readBoolean();
                         user.respMsgTempQueueTweet(result);
                         break;
+                    case "RespLocalisation" :
+                        result = mess.readBoolean();
+                        user.respMsgTempQueueLoc(result);
+                        break;
                     default: break;
                 }
 

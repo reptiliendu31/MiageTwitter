@@ -36,8 +36,9 @@ public class User {
     private BufferedReader waiter ;
     private TemporaryQueue tempo ;
     private UserBDD userCourant;
+    private String locTemp;
     private int serverID;
-    private boolean connected = false;
+    private boolean connected;
     private UserIHM ihm;
 
     public static void main(String[] args) {
@@ -56,6 +57,7 @@ public class User {
     public User() {
         try {
             ihm = new UserIHM(this);
+            connected = false;
 
             serverID = 0;
             // create the JNDI initial context.
@@ -227,6 +229,26 @@ public class User {
         }
     }
 
+    // send localistion change request
+    public void sendMsgLoc(String loc){
+        try {
+            StreamMessage req = session.createStreamMessage();
+            req.clearBody();
+            // id server
+            req.writeInt(serverID);
+            req.writeString(userCourant.getLogin());
+            req.writeString(loc);
+            req.setJMSType("LocalisationChange");
+            senderTwitterQueue.send(req);
+            System.out.println("Sent loc change request : " + loc);
+            locTemp = loc;
+        }
+        catch (JMSException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     // send follow demand
     public void sendMsgFollow(){
         try {
@@ -396,10 +418,22 @@ public class User {
         }
     }
 
+    // réception ack demande chgt de loc
+    public void respMsgTempQueueLoc(boolean result) {
+        if (result) {
+            ihm.callbackLocSuccessfull(locTemp);
+            userCourant.setLocalisation(locTemp);
+        } else {
+            ihm.callbackLocFailed();
+        }
+    }
+
 
     public void setUserCourant(UserBDD user){
         userCourant = user;
     }
 
     public UserBDD getUserCourant() { return userCourant;}
+
+
 }

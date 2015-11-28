@@ -86,6 +86,11 @@ public class TwitterQueueListener implements MessageListener {
                         String tweet = mess.readString();
                         long time = mess.readLong();
                         server.respTweet(serverId,usercourant,tweet,time);
+                    case "LocalisationChange" :
+                        serverId = mess.readInt();
+                        String loginUser = mess.readString();
+                        String loc = mess.readString();
+                        server.respLoc(serverId,loginUser,loc);
                     default: break;
                 }
 

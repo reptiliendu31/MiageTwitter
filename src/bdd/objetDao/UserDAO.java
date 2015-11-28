@@ -180,16 +180,16 @@ public class UserDAO extends DAO<UserBDD> {
 
     @Override
     public UserBDD update(UserBDD obj) {
-        try {
+       try {
             this.connect
                     .createStatement(
                             ResultSet.TYPE_SCROLL_INSENSITIVE,
                             ResultSet.CONCUR_UPDATABLE
                     ).executeUpdate(
                     "UPDATE usertwitter SET login = '" + obj.getLogin() + "',"+
-                            " password = '" + obj.getPassword() + "'" +
-                            " name = '" + obj.getName() + "'" +
-                            " firstname = '" + obj.getFirstName() + "'" +
+                            " password = '" + obj.getPassword() + "'," +
+                            " name = '" + obj.getName() + "'," +
+                            " firstname = '" + obj.getFirstName() + "'," +
                             " localisation = '" + obj.getLocalisation() + "'" +
                             " WHERE iduser = " + obj.getId()
             );
