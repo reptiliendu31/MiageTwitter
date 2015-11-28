@@ -132,6 +132,7 @@ public class PanelUser extends JPanel {
 		btnDconnexion = new JButton("D\u00E9connexion");
 		btnDconnexion.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				ihm.actionDisconnect();
 				ihm.changerPanel(Etat.Menu);
 			}
 		});
