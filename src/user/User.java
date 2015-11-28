@@ -38,8 +38,9 @@ public class User {
     private UserBDD userCourant;
     private String locTemp;
     private int serverID;
-    private boolean connected;
+    private boolean connected,follow,ville;
     private UserIHM ihm;
+
 
     public static void main(String[] args) {
         User u = new User();
@@ -308,6 +309,8 @@ public class User {
             receiverMessagesTopic.close();
 
             if(!usr.getAbonnements().isEmpty() || !usr.getLocalisation().isEmpty()){
+
+
                 String filterf="";
                 String loc="";
                 if(!usr.getAbonnements().isEmpty()){
@@ -319,15 +322,22 @@ public class User {
 
                     filterf=res.substring(0,res.length()-1);
                     filter+="(follow in (" + filterf + "))";
+                    follow=true;
+                }else{
+                    follow=false;
                 }
 
                 if(!usr.getLocalisation().equals("Aucun")){
+
+                    ville=true;
                     loc=usr.getLocalisation();
                     if(filter.equals("")){
                         filter+="ville = '"+loc+"'";
                     }else{
                         filter+=" OR (ville = '"+loc+"')";
                     }
+                }else{
+                    ville=false;
                 }
 
                 receiverMessagesTopic = session.createConsumer(destMessages, filter);
@@ -335,6 +345,10 @@ public class User {
 
                 System.out.println(filter);
                 receiverMessagesTopic.setMessageListener(new MessagesTopicListener(this));
+            }else{
+
+                follow=false;
+                ville=false;
             }
 
         } catch (JMSException e) {
@@ -476,7 +490,13 @@ public class User {
                  tab[1]=u;
             }
         }
-        ihm.majFlux(tab);
+        if(follow){
+            ihm.majFlux(tab);
+        }
+        if(ville){
+            System.out.println("haha");
+             ihm.majLoc(tab);
+        }
     }
 
     // réception ack demande chgt de loc
@@ -484,6 +504,7 @@ public class User {
         if (result) {
             ihm.callbackLocSuccessfull(locTemp);
             userCourant.setLocalisation(locTemp);
+            setFilter(userCourant);
         } else {
             ihm.callbackLocFailed();
         }

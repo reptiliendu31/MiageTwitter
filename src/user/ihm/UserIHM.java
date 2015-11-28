@@ -70,7 +70,7 @@ public class UserIHM extends JFrame {
 	}
 
 	public void actionConnexion(String login, String pwd) {
-		user.sendMsgConnection(login,pwd);
+		user.sendMsgConnection(login, pwd);
 	}
 
 	public void actionSendTweet(String text) {
@@ -135,6 +135,9 @@ public class UserIHM extends JFrame {
 
 	public void majFlux(Object[] o){
 		panelUser.addMessageToTableFlux(o);
+	}
+	public void majLoc(Object[] o){
+		panelUser.addMessageToTableLoc(o);
 	}
 
 	public void changerPanel(Etat e) {
