@@ -119,6 +119,10 @@ public class UserIHM extends JFrame {
 		panelMsg.rechargerTableau(userCourant.getMessages());
 	}
 
+	public void majFlux(Object[] o){
+		panelUser.addMessageToTableFlux(o);
+	}
+
 	public void changerPanel(Etat e) {
 		JPanel p;
 		switch (e) {

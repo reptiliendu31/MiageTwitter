@@ -3,6 +3,8 @@ package user;
 /**
  * Created by Yoan on 07/11/2015.
  */
+import bdd.objetBdd.MessageBDD;
+
 import javax.jms.*;
 
 /**
@@ -24,15 +26,16 @@ public class MessagesTopicListener implements MessageListener {
             } catch (JMSException exception) {
                 System.err.println("Failed to get message text: " + exception);
             }
-        }else if (message instanceof StreamMessage){
-            StreamMessage mess = (StreamMessage) message;
+        }else if (message instanceof ObjectMessage){
+            ObjectMessage mess = (ObjectMessage) message;
 
             try {
                 switch (message.getJMSType()) {
                     case "Tweet" :
-                        String u = mess.readString();
-                        String m = mess.readString();
-                        System.out.println(u+" : "+m);
+                        user.respTweet((MessageBDD)mess.getObject());
+
+
+
                         break;
                     default: break;
                 }

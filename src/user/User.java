@@ -279,21 +279,44 @@ public class User {
     }
 
 
-    public void setFilter(String filterf){
+
+
+    public void setFilter(UserBDD usr){
         try {
-            session.close();
+
+            String filter = "";
+
+            receiverMessagesTopic.close();
+
+            if(!usr.getAbonnements().isEmpty() || !usr.getLocalisation().isEmpty()){
+                String filterf="";
+                String loc="";
+                if(!usr.getAbonnements().isEmpty()){
+
+                    String res="";
+                    for(UserBDD u : usr.getAbonnements()){
+                        res+="'"+u.getLogin()+"',";
+                    }
+
+                    filterf=res.substring(0,res.length()-1);
+                    filter+="(follow in (" + filterf + "))";
+                }
+
+                if(!usr.getLocalisation().equals("Aucun")){
+                    loc=usr.getLocalisation();
+                    if(filter.equals("")){
+                        filter+="ville = '"+loc+"'";
+                    }else{
+                        filter+=" OR (ville = '"+loc+"')";
+                    }
+                }
+
+                receiverMessagesTopic = session.createConsumer(destMessages, filter);
 
 
-            // create the session
-            session = connection.createSession(
-                    false, Session.AUTO_ACKNOWLEDGE);
-
-            receiverMessagesTopic = session.createConsumer(destMessages, "(follow in (" + filterf + ")) OR (ville = 'tls')");
-            System.out.println("(follow in (" + filterf + ")) OR (ville = 'tls')");
-
-            receiverMessagesTopic.setMessageListener(new MessagesTopicListener(this));
-
-            connection.start();
+                System.out.println(filter);
+                receiverMessagesTopic.setMessageListener(new MessagesTopicListener(this));
+            }
 
         } catch (JMSException e) {
             e.printStackTrace();
@@ -327,7 +350,6 @@ public class User {
             req.writeString(tweet);
             req.writeLong(System.currentTimeMillis());
             req.setJMSType("Tweet");
-            req.setStringProperty("follow", userCourant.getLogin());
             senderTwitterQueue.send(req);
             System.out.println("Sent Tweet");
             userCourant.putMessage(new MessageBDD(tweet, userCourant.getId(), new Timestamp(System.currentTimeMillis()), userCourant.getLocalisation()));
@@ -372,6 +394,7 @@ public class User {
     public void respMsgTempQueueFollow(boolean res) {
         if(res){
             System.out.println("Follow successful");
+            setFilter(userCourant);
         }else{
             System.out.println("Follow Failed");
         }
@@ -380,6 +403,7 @@ public class User {
     public void respMsgTempQueueUnFollow(boolean res) {
         if(res){
             System.out.println("UnFollow successful");
+            setFilter(userCourant);
         }else{
             System.out.println("UnFollow Failed");
         }
@@ -403,7 +427,7 @@ public class User {
         setUserCourant(usr);
         System.out.println("Connexion successful");
         ihm.callbackConnexionSuccessful();
-        setFilter(usr.getFilterFollow());
+        setFilter(usr);
     }
 
     // réception
@@ -421,6 +445,19 @@ public class User {
             System.out.println("Tweet processed by server");
             ihm.majTweetsUser();
         }
+    }
+
+    public void respTweet(MessageBDD m){
+
+        Object[] tab= new Object[2];
+        tab[0]=m;
+
+        for(UserBDD u : userCourant.getAbonnements()){
+            if(u.getId() == m.getIdUser()){
+                 tab[1]=u;
+            }
+        }
+        ihm.majFlux(tab);
     }
 
 

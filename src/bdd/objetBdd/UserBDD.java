@@ -53,14 +53,6 @@ public class UserBDD implements Serializable {
         return abonnements;
     }
 
-    public String getFilterFollow(){
-        String res="";
-        for(UserBDD u : this.abonnements){
-            res+="'"+u.getLogin()+"',";
-        }
-        res=res.substring(0,res.length()-1);
-        return res;
-    }
 
     public void removeAbonnement(String login) {
         Iterator<UserBDD> iter = abonnements.iterator();

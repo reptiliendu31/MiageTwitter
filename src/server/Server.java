@@ -385,11 +385,12 @@ public class Server {
 
         try {
             // to topic
-            StreamMessage req = session.createStreamMessage();
+            ObjectMessage req = session.createObjectMessage();
             req.clearBody();
-            req.writeString(usercourant);
-            req.writeString(m.getContent());
+            req.setObject(m);
             req.setJMSType("Tweet");
+            req.setStringProperty("follow",usercourant);
+            req.setStringProperty("ville",user.getLocalisation());
             sender.send(req);
 
             // ack for user
