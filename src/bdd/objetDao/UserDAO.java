@@ -110,8 +110,8 @@ public class UserDAO extends DAO<UserBDD> {
         return userBDD;
     }
 
-    public ArrayList<String> findSearch(String search) {
-        ArrayList<String> res = new ArrayList<>();
+    public ArrayList<UserBDD> findSearch(String search) {
+        ArrayList<UserBDD> res = new ArrayList<>();
         try {
             ResultSet result = this .connect
                     .createStatement(
@@ -124,7 +124,8 @@ public class UserDAO extends DAO<UserBDD> {
                                     "OR localisation like '%"+ search+"%'"
                     );
             while(result.next()){
-                res.add(result.getString("login"));
+                UserBDD usr = new UserBDD(result.getString("login"),result.getString("password"),result.getString("name"),result.getString("firstname"),result.getString("localisation"));
+                res.add(usr);
             }
         } catch (SQLException e) {
             e.printStackTrace();

@@ -339,7 +339,7 @@ public class Server {
     public void respSearch(int idClient, String search){
         try {
             UserDAO usr = new UserDAO();
-            ArrayList<String> listLoginUser = usr.findSearch(search);
+            ArrayList<UserBDD> listLoginUser = usr.findSearch(search);
             boolean isListUser = (listLoginUser.isEmpty());
             if(!isListUser){
                 System.out.println("List not Empty and sent");
