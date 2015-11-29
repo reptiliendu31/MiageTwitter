@@ -447,10 +447,10 @@ public class User {
 
     // réception
     // response from temp queue init for connection
-    public void respMsgTempQueueSearch(ArrayList<String> list) {
+    public void respMsgTempQueueSearch(ArrayList<UserBDD> list) {
         System.out.println("List of results");
-        for(String log : list){
-            System.out.println("User login : " + log);
+        for(UserBDD usr : list){
+            System.out.println("User login : " + usr);
         }
     }
 

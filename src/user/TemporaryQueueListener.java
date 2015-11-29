@@ -77,7 +77,7 @@ public class TemporaryQueueListener implements MessageListener {
                         user.respMsgTempQueueConnection(usr);
                         break;
                     case "RespSearch" :
-                        ArrayList<String> list = (ArrayList<String>)mess.getObject();
+                        ArrayList<UserBDD> list = (ArrayList<UserBDD>)mess.getObject();
                         user.respMsgTempQueueSearch(list);
                         break;
                     default: break;
