@@ -40,6 +40,7 @@ public class User {
     private int serverID;
     private boolean connected,follow,ville;
     private UserIHM ihm;
+    private UserBDD userToUnfollow;
 
 
     public static void main(String[] args) {
@@ -190,11 +191,8 @@ public class User {
     }
 
     // send research demand
-    public void sendMsgSearch(){
+    public void sendMsgSearch(String search){
         try {
-            System.out.println("Who are you searching ?");
-            waiter = new BufferedReader(new InputStreamReader(System.in));
-            String search = waiter.readLine();
             StreamMessage req = session.createStreamMessage();
             req.clearBody();
             // id server
@@ -203,9 +201,6 @@ public class User {
             req.setJMSType("Search");
             senderTwitterQueue.send(req);
             System.out.println("Sent Search request");
-        }
-        catch (IOException e) {
-            e.printStackTrace();
         }
         catch (JMSException e) {
             e.printStackTrace();
@@ -233,11 +228,8 @@ public class User {
 
 
     // send follow demand
-    public void sendMsgFollow(){
+    public void sendMsgFollow(String login){
         try {
-            System.out.println("Enter login user you want to follow:");
-            waiter = new BufferedReader(new InputStreamReader(System.in));
-            String login = waiter.readLine();
             StreamMessage req = session.createStreamMessage();
             req.clearBody();
             // id server
@@ -248,20 +240,21 @@ public class User {
             senderTwitterQueue.send(req);
             System.out.println("Sent Follow request");
         }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
         catch (JMSException e) {
             e.printStackTrace();
         }
     }
 
     // send follow demand
-    public void sendMsgUnFollow(){
+    public void sendMsgUnFollow(String login){
         try {
-            System.out.println("Enter login user you want to unFollow:");
-            waiter = new BufferedReader(new InputStreamReader(System.in));
-            String login = waiter.readLine();
+            for (UserBDD abonne: userCourant.getAbonnements()
+                 ) {
+                if (abonne.getLogin() == login) {
+                    userToUnfollow = abonne;
+                    break;
+                }
+            }
             StreamMessage req = session.createStreamMessage();
             req.clearBody();
             // id server
@@ -271,9 +264,6 @@ public class User {
             req.setJMSType("UnFollow");
             senderTwitterQueue.send(req);
             System.out.println("Sent UnFollow request");
-        }
-        catch (IOException e) {
-            e.printStackTrace();
         }
         catch (JMSException e) {
             e.printStackTrace();
@@ -410,14 +400,19 @@ public class User {
         if(res){
             System.out.println("Follow successful");
             setFilter(userCourant);
+            ihm.callbackAbonnementSuccessful();
         }else{
             System.out.println("Follow Failed");
+            ihm.callbackAbonnementFailed();
         }
     }
 
     public void respMsgTempQueueUnFollow(boolean res) {
         if(res){
             System.out.println("UnFollow successful");
+            userCourant.getAbonnements().remove(userToUnfollow);
+            ihm.callbackDesabonnementSuccessful(userCourant.getAbonnements());
+            userToUnfollow = null;
             setFilter(userCourant);
         }else{
             System.out.println("UnFollow Failed");
@@ -425,6 +420,7 @@ public class User {
     }
 
     public void respMsgTempQueueSearch(boolean res) {
+        ihm.callbackRechercheFailed();
         System.out.println("No users found");
     }
 
@@ -448,10 +444,7 @@ public class User {
     // réception
     // response from temp queue init for connection
     public void respMsgTempQueueSearch(ArrayList<UserBDD> list) {
-        System.out.println("List of results");
-        for(UserBDD usr : list){
-            System.out.println("User login : " + usr);
-        }
+        ihm.callbackRechercheSuccessfull(list);
     }
 
     // maj tweets tableau IHM de l'user

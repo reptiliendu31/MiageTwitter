@@ -6,6 +6,7 @@ import user.User;
 import user.ihm.enums.Etat;
 import user.ihm.panels.*;
 import user.ihm.popup.PopupErreur;
+import user.ihm.popup.PopupRechercheAbo;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -26,6 +27,7 @@ public class UserIHM extends JFrame {
 	private PanelUser panelUser;
 	private PanelAbo panelAbo;
 	private PanelMessages panelMsg;
+	private PopupRechercheAbo popupRechercheAbo;
 	private User user;
 	private UserBDD userCourant;
 	
@@ -44,7 +46,7 @@ public class UserIHM extends JFrame {
 				user.signOut();
 			}
 		});
-
+		System.out.println("IHM lancée");
 		setTitle("TwittoMiage"); 
 		setSize(470, 288);
 		setVisible(false);
@@ -59,10 +61,29 @@ public class UserIHM extends JFrame {
 		panelMenu = new PanelAccueil(this);
 		panelLogin = new PanelLogin(this);
 		panelAbo = new PanelAbo(this);
+		popupRechercheAbo = new PopupRechercheAbo(this);
 
 		this.setContentPane(contentPane);
 		panelCourant = panelMenu;
 		changerPanel(Etat.Menu);
+	}
+
+	public void appellerPopupRecherche() {
+		popupRechercheAbo.razPopup();
+		popupRechercheAbo.setVisible(true);
+	}
+
+	public void actionRecherche(String recherche) {
+		user.sendMsgSearch(recherche);
+	}
+
+	public void actionDesabo(String loginAbonnement) {
+		user.sendMsgUnFollow(loginAbonnement);
+	}
+
+
+	public void actionAbonnement(String loginAbonnement) {
+		user.sendMsgFollow(loginAbonnement);
 	}
 
 	public void actionInscription(String login, String pwd, String name, String firstName, String loc) {
@@ -79,6 +100,23 @@ public class UserIHM extends JFrame {
 
 	public void actionSendLoc(String loc) {
 		user.sendMsgLoc(loc);
+	}
+
+	public void callbackAbonnementSuccessful() {
+		PopupErreur p = new PopupErreur("Abonnement","Abonnement réussi !");
+	}
+
+	public void callbackAbonnementFailed() {
+		PopupErreur p = new PopupErreur("Abonnement","Abonnement échoué !");
+	}
+
+	public void callbackDesabonnementSuccessful(ArrayList<UserBDD> abonnes) {
+		panelAbo.rechargerTableau(abonnes);
+		PopupErreur p = new PopupErreur("Désabonnement","Désabonnement réussi !");
+	}
+
+	public void callbackDesabonnementFailed() {
+		PopupErreur p = new PopupErreur("Désabonnement","Désabonnement échoué !");
 	}
 
 	public void callbackConnexionSuccessful() {
@@ -127,6 +165,13 @@ public class UserIHM extends JFrame {
 		PopupErreur p = new PopupErreur("Localisation","Erreur : localisation inchangée.");
 	}
 
+	public void callbackRechercheSuccessfull(ArrayList<UserBDD> recherche) {
+		popupRechercheAbo.rechargerTableau(recherche);
+	}
+
+	public void callbackRechercheFailed() {
+		PopupErreur p = new PopupErreur("Recherche","Erreur : recherche échouée.");
+	}
 
 
 	public void majTweetsUser() {

@@ -131,7 +131,6 @@ public class Server {
             mp = session.createProducer(tempo);
             // stockage producteur et id user
             tempQueues.put(nbTempQueues,mp);
-
             // envoi ack à l'user avec son numéro de queue
             StreamMessage rep = session.createStreamMessage();
             rep.clearBody();
@@ -226,7 +225,7 @@ public class Server {
                 if(user.getPassword().equals(password)){
                      if(!isUserConnected(user)){
                         connectUserToServer(user);
-                        System.out.println("User connected");
+                        System.out.println("User connected" + connectedUsers.get(user.getLogin()));
                      }else{
                         isUser = false;
                         errorConnection = "Utilisateur déjà connecté";
@@ -341,6 +340,7 @@ public class Server {
             UserDAO usr = new UserDAO();
             ArrayList<UserBDD> listLoginUser = usr.findSearch(search);
             boolean isListUser = (listLoginUser.isEmpty());
+            System.out.println("List not Empty and sent");
             if(!isListUser){
                 System.out.println("List not Empty and sent");
                 // send list of logins

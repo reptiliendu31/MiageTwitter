@@ -21,6 +21,7 @@ import javax.swing.table.AbstractTableModel;
 import bdd.objetBdd.UserBDD;
 import user.ihm.UserIHM;
 import user.ihm.enums.Etat;
+import user.ihm.popup.PopupRechercheAbo;
 
 import javax.swing.JButton;
 
@@ -84,10 +85,17 @@ public class PanelAbo extends JPanel {
 		btnDesabo.setEnabled(false);
 		btnDesabo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				ihm.actionDesabo(abonneCourant.getLogin());
 			}
 		});
 		
 		btnAjouterAbonnement = new JButton("Ajouter abonnement");
+		btnAjouterAbonnement.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ihm.appellerPopupRecherche();
+			}
+		});
 		panelNorth.add(btnAjouterAbonnement);
 		panelNorth.add(btnDesabo);
 		
