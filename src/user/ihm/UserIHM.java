@@ -231,6 +231,7 @@ public class UserIHM extends JFrame {
 
 	public void actionDisconnect() {
 		user.signOut();
+		user.closeConnections();
 	}
 
 }

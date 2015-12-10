@@ -134,7 +134,9 @@ public class User {
             sendMsgSignOut(userCourant.getLogin());
             System.out.println("Sign Out sent");
         }
+    }
 
+    public void closeConnections() {
         if (context != null) {
             try {
                 context.close();
@@ -151,7 +153,6 @@ public class User {
                 exception.printStackTrace();
             }
         }
-
     }
 
     public void sendMsgSignIn(String login, String pswd, String name, String fName, String localisation) {
