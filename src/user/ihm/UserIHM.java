@@ -44,6 +44,7 @@ public class UserIHM extends JFrame {
 			@Override
 			public void windowClosing(java.awt.event.WindowEvent windowEvent) {
 				user.signOut();
+				user.closeConnections();
 			}
 		});
 		System.out.println("IHM lancée");
@@ -231,7 +232,6 @@ public class UserIHM extends JFrame {
 
 	public void actionDisconnect() {
 		user.signOut();
-		user.closeConnections();
 	}
 
 }
