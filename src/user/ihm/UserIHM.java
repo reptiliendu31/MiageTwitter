@@ -102,7 +102,8 @@ public class UserIHM extends JFrame {
 		user.sendMsgLoc(loc);
 	}
 
-	public void callbackAbonnementSuccessful() {
+	public void callbackAbonnementSuccessful(ArrayList<UserBDD> abos) {
+		panelAbo.rechargerTableau(abos);
 		PopupErreur p = new PopupErreur("Abonnement","Abonnement réussi !");
 		popupRechercheAbo.dispose();
 	}

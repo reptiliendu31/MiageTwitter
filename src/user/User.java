@@ -418,8 +418,9 @@ public class User {
         if(usr != null){
             System.out.println("Follow successful");
             System.out.println(usr.toString());
+            userCourant.putSub(usr);
             setFilter(userCourant);
-            ihm.callbackAbonnementSuccessful();
+            ihm.callbackAbonnementSuccessful(userCourant.getAbonnements());
         }else{
             System.out.println("Follow Failed");
             ihm.callbackAbonnementFailed();
