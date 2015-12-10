@@ -42,10 +42,11 @@ public class TemporaryQueueListener implements MessageListener {
                         result = mess.readBoolean();
                         user.respMsgTempQueueSignOut(result);
                         break;
-                    case "RespFollow" :
+                    /*case "RespFollow" :
                         result = mess.readBoolean();
-                        user.respMsgTempQueueFollow(result);
-                        break;
+                        UserBDD res = (UserBDD)mess.readObject();
+                        user.respMsgTempQueueFollow(res);
+                        break;*/
                     case "RespUnFollow" :
                         result = mess.readBoolean();
                         user.respMsgTempQueueUnFollow(result);
@@ -79,6 +80,10 @@ public class TemporaryQueueListener implements MessageListener {
                     case "RespSearch" :
                         ArrayList<UserBDD> list = (ArrayList<UserBDD>)mess.getObject();
                         user.respMsgTempQueueSearch(list);
+                        break;
+                    case "RespFollow" :
+                        UserBDD u = (UserBDD)mess.getObject();
+                        user.respMsgTempQueueFollow(u);
                         break;
                     default: break;
                 }

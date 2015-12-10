@@ -414,9 +414,10 @@ public class User {
         }
     }
 
-    public void respMsgTempQueueFollow(boolean res) {
-        if(res){
+    public void respMsgTempQueueFollow(UserBDD usr) {
+        if(usr != null){
             System.out.println("Follow successful");
+            System.out.println(usr.toString());
             setFilter(userCourant);
             ihm.callbackAbonnementSuccessful();
         }else{

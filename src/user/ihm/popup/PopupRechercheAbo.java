@@ -197,6 +197,6 @@ public class PopupRechercheAbo extends JDialog {
 
 	public void razPopup() {
 		btnAjouterAbonnement.setEnabled(false);
-		rechargerTableau(new ArrayList<>());
+		rechargerTableau(new ArrayList<UserBDD>());
 	}
 }

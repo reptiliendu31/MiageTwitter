@@ -285,9 +285,11 @@ public class Server {
                     }
                 // getting temp queue destination
                     MessageProducer mp = tempQueues.get(idClient);
-                    StreamMessage rep = session.createStreamMessage();
+                    // send the user
+                    ObjectMessage rep = session.createObjectMessage();
+                    //StreamMessage rep = session.createStreamMessage();
                     rep.clearBody();
-                    rep.writeBoolean(isUser);
+                    rep.setObject(userF);
                     rep.setJMSType("RespFollow");
                     mp.send(rep);
             }
