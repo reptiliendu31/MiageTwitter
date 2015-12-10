@@ -102,7 +102,7 @@ public class PopupRechercheAbo extends JDialog {
 		btnAjouterAbonnement.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				dispose();
+				ihm.actionAbonnement(abonneCourant.getLogin());
 			}
 		});
 		panelNorth.add(btnAjouterAbonnement);

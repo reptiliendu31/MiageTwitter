@@ -104,10 +104,12 @@ public class UserIHM extends JFrame {
 
 	public void callbackAbonnementSuccessful() {
 		PopupErreur p = new PopupErreur("Abonnement","Abonnement réussi !");
+		popupRechercheAbo.dispose();
 	}
 
 	public void callbackAbonnementFailed() {
 		PopupErreur p = new PopupErreur("Abonnement","Abonnement échoué !");
+		popupRechercheAbo.dispose();
 	}
 
 	public void callbackDesabonnementSuccessful(ArrayList<UserBDD> abonnes) {

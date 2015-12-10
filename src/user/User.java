@@ -134,6 +134,24 @@ public class User {
             sendMsgSignOut(userCourant.getLogin());
             System.out.println("Sign Out sent");
         }
+
+        if (context != null) {
+            try {
+                context.close();
+            } catch (NamingException exception) {
+                exception.printStackTrace();
+            }
+        }
+
+        // close the respConnection
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (JMSException exception) {
+                exception.printStackTrace();
+            }
+        }
+
     }
 
     public void sendMsgSignIn(String login, String pswd, String name, String fName, String localisation) {
